@@ -1,12 +1,10 @@
 package cornerfinders.impl;
 
 import com.google.common.collect.Lists;
+import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.Collections;
+import java.util.*;
 
 
 /**
