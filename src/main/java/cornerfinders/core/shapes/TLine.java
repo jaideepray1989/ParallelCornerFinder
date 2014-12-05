@@ -1,23 +1,4 @@
-//(c) MIT 2003.  All rights reserved.
-
-//$Id: TLine.java,v 1.15 2007-11-16 19:39:34 hammond Exp $
-//RLine.java -- 
-//Author: Tracy Hammond <hammond@ai.mit.edu> 
-//Copyright: Copyright (C) 2002 by Tracy Hammond, 
-//Design Rationale Group at MIT 
-//Created: <Mon Nov 12 16:57:40 2002> 
-
 package cornerfinders.core.shapes;
-
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Shape;
-import java.awt.geom.Line2D;
-
-import edu.mit.sketch.language.parser.ComponentDef;
-import edu.mit.sketch.language.shapes.DrawnShape;
-import edu.mit.sketch.language.shapes.RLAC;
-import edu.mit.sketch.language.shapes.RRectangle;
 
 /**
  * This class represents the Line primitive.
@@ -60,7 +41,6 @@ public class TLine{
    * This function creates a line segment of the same
    * length as this line but is perpendicular to this line
    * and has an endpoint at point p.
-   * @param p endpoint of perpendicular line
    * @return the perpendicular line segment.
    */
   public static double[] getPerpendicularLine(double newx, double newy, double newlength,
@@ -154,7 +134,6 @@ public class TLine{
    * line and the given line as if they are infinite.
    * This function returns null if there is no intersection point
    * (i.e., the lines are parallel).
-   * @param l the other line
    * @return The intersection point between the two lines
    */
   public static double [] getIntersection(double l1_x1, double l1_y1, double l1_x2, double l1_y2, 
@@ -292,7 +271,6 @@ public class TLine{
   /**
    * Compute the distance from this line to 
    * the closest point on the line.
-   * @param p the point to compare
    * @return the distance
    */
   public static double distance(double px, double py, 
@@ -360,7 +338,6 @@ public class TLine{
   
   /**
    * Is this point on the bounding box of the point
-   * @param p the point on the bounding box
    * @return true if the point and line share the bounding box
    */
   public static boolean overBoundingBox(double px, double py, 
@@ -371,8 +348,7 @@ public class TLine{
     if(py < ly1 && py < ly2){return false;}
     return true;
   }
-  
-  @Override
+
   public boolean intersects(TLine line){
     System.out.println("distance between lines is " + distance(line));
     if(distance(line) < .1){return true;}
@@ -407,7 +383,6 @@ public class TLine{
    * If the threshold is 1, all lines are parallel
    * If the threshold is .5, lines with a difference of  less than 45 
    * degrees are parallel.
-   * @param line 
    * @param percent_threshold
    * @return true if parallel
    */
@@ -433,19 +408,12 @@ public class TLine{
   public TLine(double x1, double y1, double x2, double y2){
     this(new TPoint(x1, y1), new TPoint(x2,y2));
   }
-  
-  /**
-   * Clone the line by cloning a shape in general 
-   * then its two endpoints
-   */
-	@Override
-  public TLine clone(){
-    TLine newLine = (TLine)super.clone();
-    newLine.m_p1 = m_p1.clone();
-    newLine.m_p2 = m_p2.clone();
-    return newLine;
-	}
-   	
+
+    public TLine(TPoint p1, TPoint p2){
+        m_p1 = p1;
+        m_p2 = p2;
+    }
+
   /**
    * Update the points of the line
    * @param x1 x value of endpoint 1
@@ -457,92 +425,29 @@ public class TLine{
     getP1().setOrigP(x1, y1);
     getP2().setOrigP(x2, y2);
   }
-  
-  /**
-   * Deleted the memory of the points that make up the line
-   */
-  @Override
-  public void deleteShapeHistory(){
-    super.deleteShapeHistory();
-    m_p1.deleteShapeHistory();
-    m_p2.deleteShapeHistory();
-  }
-  
-	public TLine(TPoint p1, TPoint p2){
-		super("LAC",0);
-    addAccessibleProperty(new ComponentDef("double", "length"));
-    addAccessibleProperty(new ComponentDef("double", "angle"));
-    addAccessibleProperty(new ComponentDef("Point", "p1"));
-    addAccessibleProperty(new ComponentDef("Point", "p2"));
-		setType("Line");
-		m_p1 = p1;
-		m_p2 = p2;
-		//m_p1 = p1.clone();
-		//m_p2 = p2.clone();
-		p1.setName("p1");
-		addAlias(p1);
-		p2.setName("p2");
-		addAlias(p2);
-    this.setRecogType("Line");
-	}
-	
-	public static TLine tempLine(TPoint p1, TPoint p2){
-		TLine l = new TLine(p1.clone(),p2.clone());
-		return l;
-	}
-  
-	@Override
-	public void setName(String name){
-		super.setName(name);
-	}
-	
-	public TLine(TLine l1, TLine l2){
-		this((TPoint)l1.get("p1"), (TPoint)l2.get("p2"));
-		l1.setName("l1");
-		l2.setName("l2");
-		addComponent(l1);
-		addComponent(l2);
-	}
-  
-	@Override
-	public DrawnShape internalGet(String shapename){  
-      if(shapename.equals("start")){return getP1();}
-      if(shapename.equals("end")){return getP2();}
-      if(shapename.equals("p1")){return getP1();}
-      if(shapename.equals("p2")){return getP2();}
-      if(shapename.equals("center") ||
-          shapename.equals("midpoint")){
-        return getCenter();   
-		}
-		return super.internalGet(shapename);
-	}
-  
-  @Override
+
   public TPoint getCenter(){
-    return new TPoint(getX(), getY(), getTime());
+    return new TPoint(getX(), getY());
   }
-  
-  @Override 
+
   public double getX(){
     return (m_p1.getX() + m_p2.getX())/2;
   }
-  @Override
+
   public double getY(){
     return (m_p1.getY() + m_p2.getY())/2;
   }
-  @Override
+
   public double getMinX(){
     return Math.min(m_p1.getX(), m_p2.getX());
   }
-  @Override
+
   public double getMinY(){
     return Math.min(m_p1.getY(), m_p2.getY());
   }
-  @Override
   public double getMaxX(){
     return Math.max(m_p1.getX(), m_p2.getX());
   }
-  @Override 
   public double getMaxY(){
     return Math.max(m_p1.getY(), m_p2.getY());
   }
@@ -552,7 +457,6 @@ public class TLine{
    * is assumed to be the length times the width, where the width is 1.
    * return area of line, which equals the euclidean length
    */
-  @Override  
   public double getArea(){
     return getLength();
   }
@@ -564,15 +468,7 @@ public class TLine{
   public double getLength(){
     return m_p1.distance(m_p2);
   }
-  
-	@Override
-	public double getProp(String propname){
-		if(propname.equals("length")){return getLength();}
-		if(propname.equals("angle")){return getAngleInDegrees();}
-		return super.getProp(propname);
-	}
-  
-	@Override
+
 	public boolean over(double x, double y){
 		if(distance(new TPoint(x,y)) < 15){return true;}
 		return false;
@@ -582,34 +478,7 @@ public class TLine{
 		return over(p.getX(), p.getY());
 	}
     
-  public int relativeCCW(DrawnShape shape){
-    if(TLine.class.isInstance(shape)){return relativeCCW((TLine)shape);}
-    if(TPoint.class.isInstance(shape)){
-      return relativeCCW((TPoint)shape); 
-    }
-    TPoint p1 = new TPoint(shape.get("center").getProp("x") 
-        + shape.getProp("width")/2, 
-        shape.get("center").getProp("y") 
-        + shape.getProp("height")/2,getTime());
-    TPoint p2 = new TPoint(shape.get("center").getProp("x") 
-        - shape.getProp("width")/2, 
-        shape.get("center").getProp("y") 
-        + shape.getProp("height")/2,getTime());    
-    TPoint p3 = new TPoint(shape.get("center").getProp("x") 
-        + shape.getProp("width")/2, 
-        shape.get("center").getProp("y") 
-        - shape.getProp("height")/2,getTime());
-    TPoint p4 = new TPoint(shape.get("center").getProp("x") 
-        - shape.getProp("width")/2, 
-        shape.get("center").getProp("y") 
-        - shape.getProp("height")/2,getTime());
-    int i1 = relativeCCW(p1);
-    int i2 = relativeCCW(p2);
-    int i3 = relativeCCW(p3);
-    int i4 = relativeCCW(p4);
-    if(i1 == i2 && i2 == i3 && i3 == i4){return i1;}
-    return 0;
-  }
+
   
   /**
    * Relative counter clockwise direction.
@@ -667,106 +536,15 @@ public class TLine{
     if(diff < 180){return 1;}
     return -1;
   }
-  
-  public boolean sameSide(DrawnShape s1, DrawnShape s2){
-    int i1 = relativeCCW(s1);
-    int i2 = relativeCCW(s2);
-    if(i1 !=0 && i1 == i2){return true;}
-    return false;
-  }
 
-  
-  public boolean oppositeSide(DrawnShape s1, DrawnShape s2){    
-    int i1 = relativeCCW(s1);
-    int i2 = relativeCCW(s2);
-    if(i1 == 0 || i2 == 0 || i1 == i2){return false;}
-    return true;
-  }  
-  
-  public boolean sameSide(DrawnShape s1){
-    int i1 = relativeCCW(s1);
-    if(i1 != 0){return true;}
-    return false;
-  }
 
-  @Override
-	public void rotate(double degrees){
-    if(numComponents() == 0){
-    m_p1.rotate(degrees);
-    m_p2.rotate(degrees);}
-    super.rotate(degrees); 
-	}
 
-  
-  @Override
-  public void skewX(double lowY, double yScale){
-    if(numComponents() == 0){
-      m_p1.skewX(lowY, yScale);
-      m_p2.skewX(lowY, yScale);
-      return;
-    }
-    super.skewX(lowY, yScale);
-  }
-  
-  @Override
-  public void skewY(double lowX, double xScale){
-    if(numComponents() == 0){
-      m_p1.skewY(lowX, xScale);
-      m_p2.skewY(lowX, xScale);
-      return;
-    }
-    super.skewY(lowX, xScale);
-  }
-  @Override
-  public void scale(double factor){   
-    if(numComponents() == 0){
-  m_p1.scale(factor);
-    m_p2.scale(factor);}
-    super.scale(factor); 
-  }
-  
-  @Override
-  public void scaleHeight(double factor){
-      m_p1.scaleHeight(factor);
-      m_p2.scaleHeight(factor);
-    super.scaleHeight(factor);
-  }
-  
-  @Override
-  public void scaleWidth(double factor){
-      m_p1.scaleWidth(factor);
-      m_p2.scaleWidth(factor);
-    super.scaleWidth(factor);
-  }
-  @Override
-  public void translate(double x,double y){     
-    if(numComponents() == 0){
-    m_p1.translate(x,y);
-    m_p2.translate(x,y);}
-    
-    super.translate(x,y);
-  }
-  
 	public boolean holdDragTrigger(int x, int y){
 		if(over(x,y)){return true;}
 		return false;
 	}
-	
-	//public Line getAWT(){return new Line(m_p1.getX(), m_p1.getY(), m_p2.getX(), m_p2.getY());}
-	
 
-  
-	@Override
-	public boolean intersects(DrawnShape r){
-    if(r.isOfType("Line")){
-      return intersects((TLine)r);}  
-    RRectangle rect = r.getBoundingBox();
-    if(getMinX() > rect.getMaxX()){return false;}
-    if(getMaxX() < rect.getMinX()){return false;}
-    if(getMinY() > rect.getMaxY()){return false;}
-    if(getMaxY() < rect.getMinY()){return false;}
-    return true;
-	} 
+
 	
 	public double getAngleInDegrees(){
 		double angle = 360 - getAngleInRadians() * 180/Math.PI;
@@ -790,51 +568,16 @@ public class TLine{
   public static double getAngleInRadians(double x1, double y1, double x2, double y2){
 	    return Math.atan2(y2 - y1, x2 - x1);
 	  }
-  
-	/**
-	 * This paints the cleaned version of a line.
-	 **/
-  @Override
-	public Dimension paintClean(Graphics g){
-    if(!isOverrideColor()){g.setColor(getColor());}
-		g.drawLine((int)getP1().getX(), 
-						(int)getP1().getY(), 
-						(int)getP2().getX(), 
-						(int)getP2().getY());
-		return new Dimension((int)getMaxX(), (int)getMaxY());
-	}
-	
-	
-	/**
-	 * Prints out the points of the line and the time it was created.
-	 **/
-  @Override
+
 	public void print(){
 		System.out.println(toString()); 
 	}
-	
-  @Override
-	public String toString(){
-		return "TLine " + getName() + " " + get("p1") + " " + get("p2"); 
-	}
 
-  /* 
-   * 
-   * @return
-   * @see edu.mit.sketch.language.shapes.RLAC#getFlipped()
-   */
-  public DrawnShape getFlipped() {
-    return new TLine((TPoint)get("p2"), (TPoint)get("p1"));
-  }
 
   public void flip() {
     TPoint temp = m_p1;
     m_p1 = m_p2;
     m_p2 = temp;    
-  }
-
-  public Shape get2DShape() {
-	return new Line2D.Double(getP1().getX(), getP1().getY(), getP2().getX(), getP2().getY());
   }
 
 }
