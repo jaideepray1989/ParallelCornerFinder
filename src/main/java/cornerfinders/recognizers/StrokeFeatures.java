@@ -8,6 +8,9 @@
  */
 package cornerfinders.recognizers;
 
+import cornerfinders.core.shapes.TPoint;
+import sun.security.provider.certpath.Vertex;
+
 import java.awt.Color;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -15,13 +18,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.mit.sketch.geom.Vertex;
-import edu.mit.sketch.language.shapes.Stroke;
-import edu.mit.sketch.toolkit.SimpleClassifier3;
-import edu.tamu.awolin.cornerFinder.CornerFinder;
-import edu.tamu.hammond.io.Plot;
-import edu.tamu.hammond.sketch.shapes.TPoint;
-import edu.tamu.hammond.sketch.shapes.TStroke;
 
 /**
  * @author hammond
@@ -391,114 +387,6 @@ public class StrokeFeatures implements StrokeThresholds {
 	}
 
 
-	public void debug(int level, boolean plotit, boolean printit) {
-		if (level == 0) {
-			if (printit) {
-				TracyPolyLineParse p = new TracyPolyLineParse(this, true);
-			}
-		}
-		if (level == 1) {
-			if (printit) {
-				System.out.println("Points");
-				for (int i = 0; i < m_size; i++) {
-					System.out.println(i + ": x=" + m_x[i] + ",y=" + m_y[i]
-							+ ",t=" + m_time[i]);
-				}
-			}
-			if (plotit) {
-				Plot plot = new Plot("Stroke");
-				plot.addLine(m_x, m_y, Color.red, 10);
-				plot.setKeepdim(true);
-				plot.plot();
-			}
-		}
-		if (level == 2) {
-			if (printit) {
-				System.out.println("First Derivative");
-				for (int i = 0; i < m_size - 1; i++) {
-					System.out.println(i + ": dx=" + m_dx[i] + ",dy=" + m_dy[i]
-							+ ",dt=" + m_dtime[i] + ",dir=" + m_dir[i]
-							+ ",l = " + m_segLength[i] + ",tl="
-							+ m_lengthSoFar[i]);
-				}
-			}
-			if (plotit) {
-				Plot plot = new Plot("Direction");
-				plot.addLine(m_lengthSoFar, m_dir, Color.green, 10);
-				plot.plot();
-				plot = new Plot("Speed");
-				plot.addLine(m_lengthSoFar, m_speed, Color.blue, 10);
-				plot.plot();
-			}
-		}
-		if (level == 3) {
-			if (printit) {
-				System.out.println("Second Derivative");
-				for (int i = 0; i < m_size - 2; i++) {
-					System.out.println(i + ": acc=" + m_acceleration[i]
-							+ ",curv=" + m_curvature[i] + ",tcurv="
-							+ m_totalCurvature[i]);
-				}
-			}
-			if (plotit) {
-				Plot plot = new Plot("Curvature");
-				plot.addLine(m_2lengthSoFar, m_curvature, Color.yellow, 10);
-				plot.plot();
-				plot = new Plot("Non-absolute Curvature");
-				plot.addLine(m_2lengthSoFar, m_curvNoAbs, Color.magenta, 10);
-				plot.plot();
-				plot = new Plot("Acceleration");
-				plot.addLine(m_2lengthSoFar, m_acceleration, Color.orange, 10);
-				plot.plot();
-			}
-		}
-		if (level == 4) {
-			if (printit) {
-				for (int i = 0; i < m_xcurvCorner.length; i++) {
-					System.out.println(i + ": curve corner " + m_xcurvCorner[i]
-							+ "," + m_ycurvCorner[i]);
-				}
-				for (int i = 0; i < m_xspeedCorner.length; i++) {
-					System.out.println(i + ": speed corner "
-							+ m_xspeedCorner[i] + "," + m_yspeedCorner[i]);
-				}
-				for (int i = 0; i < m_xfinalCorner.length; i++) {
-					System.out.println(i + ": final corner "
-							+ m_xfinalCorner[i] + "," + m_yfinalCorner[i]);
-				}
-			}
-			if (plotit) {
-				Plot plot = new Plot("Curvature Corners");
-				plot.addLine(m_x, m_y, Color.yellow, 10);
-				plot.addLine(m_xcurvCorner, m_ycurvCorner, Color.black, 10);
-				plot.setKeepdim(true);
-				plot.plot();
-				plot = new Plot("Speed Corners");
-				plot.addLine(m_x, m_y, Color.orange, 10);
-				plot.addLine(m_xspeedCorner, m_yspeedCorner, Color.black, 10);
-				plot.setKeepdim(true);
-				plot.plot();
-				plot = new Plot("Final Corners");
-				plot.addLine(m_x, m_y, Color.red, 10);
-				plot.addLine(m_xfinalCorner, m_yfinalCorner, Color.black, 10);
-				plot.setKeepdim(true);
-				plot.plot();
-				calcBrandonCorners();
-				plot = new Plot("Brandon Corners");
-				plot.addLine(m_x, m_y, Color.red, 10);
-				plot.addLine(m_xbrandonCorner, m_ybrandonCorner, Color.black,
-						10);
-				plot.setKeepdim(true);
-				plot.plot();
-				TracyPolyLineParse p = new TracyPolyLineParse(this, false);
-				plot = new Plot("Tracy Corners");
-				plot.addLine(m_x, m_y, Color.cyan, 10);
-				plot.addLine(m_xTracyCorner, m_yTracyCorner, Color.black, 10);
-				plot.setKeepdim(true);
-				plot.plot();
-			}
-		}
-	}
 
 	public List<Integer> computePeakPoints(double threshold,
 			double[] changearray) {
@@ -954,20 +842,6 @@ public class StrokeFeatures implements StrokeThresholds {
 		return newStroke;
 	}
 
-	/*
-	 * private void calcDirectionChange() { double largestDiff =
-	 * Double.MIN_VALUE; for (int i = 0; i < m_dir.length-1; i++) { if
-	 * (Math.abs(m_dir[i]-m_dir[i+1]) > largestDiff) largestDiff =
-	 * Math.abs(m_dir[i]-m_dir[i+1]); } m_largestDirectionChange =
-	 * largestDiff/Math.abs(m_totalRotation); //System.out.println("CHANGE: " +
-	 * m_largestDirectionChange); }
-	 */
-
-	/*
-	 * public double getLargestDirectionChange() { return
-	 * m_largestDirectionChange; }
-	 */
-
 	public double totalRotation() {
 		return m_totalRotation;
 	}
@@ -1071,58 +945,7 @@ public class StrokeFeatures implements StrokeThresholds {
 		return m_numRevolutions;
 	}
 
-	/*
-	 * public void calcBrandonCorners() { m_brandonCorners =
-	 * computePeakPoints(m_averageCurvature*.8, m_curvature);
-	 * m_brandonCorners.addAll(m_speedCorners);
-	 * Collections.sort(m_brandonCorners);
-	 * m_brandonCorners.set(m_brandonCorners.size()-1, m_x.length-1); double
-	 * thresh = getStrokeLength()*M_CORNER_BRANDON_DIS_PERCENT; boolean stop =
-	 * false; int numCorners = m_brandonCorners.size(); while (!stop) { for (int
-	 * i = m_brandonCorners.size()-2; i >= 0; i--) { if (m_brandonCorners.get(i) <
-	 * 0 || m_brandonCorners.get(i+1) < 0) continue; double x1 =
-	 * m_x[m_brandonCorners.get(i)]; double y1 = m_y[m_brandonCorners.get(i)];
-	 * double x2 = m_x[m_brandonCorners.get(i+1)]; double y2 =
-	 * m_y[m_brandonCorners.get(i+1)]; if (Point2D.distance(x1,y1,x2,y2) <
-	 * thresh) { if (i == m_brandonCorners.size()-2) m_brandonCorners.remove(i);
-	 * else { int avg = (m_brandonCorners.get(i)+m_brandonCorners.get(i+1))/2;
-	 * m_brandonCorners.remove(i+1); m_brandonCorners.set(i, avg); } i--; } } if
-	 * (m_brandonCorners.size()==numCorners) { stop = true; } numCorners =
-	 * m_brandonCorners.size(); } // connecting lines with similar slopes should
-	 * have middle point removed for (int i = m_brandonCorners.size()-2; i >= 1;
-	 * i--) { double x0 = m_x[m_brandonCorners.get(i+1)]; double y0 =
-	 * m_y[m_brandonCorners.get(i+1)]; double x1 = m_x[m_brandonCorners.get(i)];
-	 * double y1 = m_y[m_brandonCorners.get(i)]; double x2 =
-	 * m_x[m_brandonCorners.get(i-1)]; double y2 =
-	 * m_y[m_brandonCorners.get(i-1)]; double slope1 = (y0-y1)/(x0-x1); double
-	 * slope2 = (y1-y2)/(x1-x2); double diff = Math.abs(slope1-slope2); if (diff <
-	 * M_CORNER_BRANDON_SIM_SLOPE || Double.isInfinite(diff))
-	 * m_brandonCorners.remove(i); } //System.out.println("Final Slopes: ");
-	 * /*for (int i = m_brandonCorners.size()-2; i >= 1; i--) { double x0 =
-	 * m_x[m_brandonCorners.get(i+1)]; double y0 =
-	 * m_y[m_brandonCorners.get(i+1)]; double x1 = m_x[m_brandonCorners.get(i)];
-	 * double y1 = m_y[m_brandonCorners.get(i)]; double x2 =
-	 * m_x[m_brandonCorners.get(i-1)]; double y2 =
-	 * m_y[m_brandonCorners.get(i-1)]; //double slope1 = (y0-y1)/(x0-x1);
-	 * //double slope2 = (y1-y2)/(x1-x2); //System.out.println("Slope: " +
-	 * (Math.abs(slope1-slope2))); }
-	 */
-	/*
-	 * uncomment this section m_xbrandonCorner = new
-	 * double[m_brandonCorners.size()]; m_ybrandonCorner = new
-	 * double[m_brandonCorners.size()]; for(int i = 0; i <
-	 * m_brandonCorners.size(); i++){ m_xbrandonCorner[i] =
-	 * m_x[m_brandonCorners.get(i)]; m_ybrandonCorner[i] =
-	 * m_y[m_brandonCorners.get(i)]; }
-	 */
-	// plot
-	/*
-	 * Plot plot = new Plot("Brandon Corners"); plot.addLine(m_x, m_y,
-	 * Color.yellow, 10); plot.addLine(m_xbrandonCorner, m_ybrandonCorner,
-	 * Color.black, 10); plot.setKeepdim(true); plot.plot();
-	 */
 
-	// }
 	public void calcBrandonCorners() {
 		boolean debug = false;
 		int neighborhood = (int) (m_x.length * M_NEIGHBORHOOD_PCT);

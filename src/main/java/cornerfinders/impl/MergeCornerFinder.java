@@ -1,8 +1,10 @@
 package cornerfinders.impl;
-
-import com.google.common.collect.Lists;
+import cornerfinders.core.shapes.TLine;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
+import cornerfinders.core.shapes.helpers.Features;
+import cornerfinders.recognizers.BStroke;
+import cornerfinders.recognizers.Fit;
 
 import java.util.*;
 
@@ -189,8 +191,7 @@ public class MergeCornerFinder extends CornerFinder
 	
 	/**
 	 * Calculates the curvature values at each point
-	 * 
-	 * @param arcLength Arc lengths of the points
+	 *
 	 * @param direction Direction (angles) of the points
 	 * @param smooth Should an average filter be applied?
 	 * @return The curvature value at each point
@@ -884,7 +885,6 @@ public class MergeCornerFinder extends CornerFinder
 	 * 
 	 * @param pts Points of the stroke
 	 * @param corners Corner fit to calculate the error for
-	 * @param totalLength Total length of the stroke
 	 * @return The orthogonal distance squared error for the entire stroke
 	 */
 	private double getFitError(List<TPoint> pts, ArrayList<Integer> corners, double[] arcLength)
@@ -1393,8 +1393,4 @@ public class MergeCornerFinder extends CornerFinder
 		return false;
 	}
 
-    @Override
-    public ArrayList<Integer> findCorners(TStroke stroke) {
-        return Lists.newArrayList();
-    }
 }

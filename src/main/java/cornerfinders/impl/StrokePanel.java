@@ -1,12 +1,12 @@
 package cornerfinders.impl;
 
+import cornerfinders.core.shapes.TStroke;
+
 import java.awt.Graphics;
 import javax.swing.JPanel;
 
 import java.util.ArrayList;
 import java.util.Collections;
-
-import edu.tamu.hammond.sketch.shapes.TStroke;
 
 
 /**
@@ -80,8 +80,7 @@ public class StrokePanel extends JPanel
 	
 	/**
 	 * 
-	 * 
-	 * @param j
+	 *
 	 */
 	public void addSelectedCorner(int index)
 	{
@@ -135,7 +134,6 @@ public class StrokePanel extends JPanel
 			g.clearRect(0, 0, this.getWidth(), this.getHeight());
 			
 			g.setColor(java.awt.Color.BLACK);
-			stroke.paint(g);
 			
 			// Draw corners
 			int radius = 10;

@@ -2,6 +2,7 @@ package cornerfinders.impl;
 
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
+import cornerfinders.core.shapes.helpers.Features;
 
 import java.util.ArrayList;
 import java.util.Collections;

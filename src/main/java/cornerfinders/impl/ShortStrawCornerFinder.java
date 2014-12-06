@@ -1,14 +1,12 @@
 package cornerfinders.impl;
 
+import cornerfinders.core.shapes.TPoint;
+import cornerfinders.core.shapes.TStroke;
+import cornerfinders.core.shapes.helpers.Features;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
-import java.util.Collections;
-
-import edu.tamu.awolin.linearClassifier.Features;
-import edu.tamu.hammond.sketch.shapes.TPoint;
-import edu.tamu.hammond.sketch.shapes.TStroke;
-
 
 /**
  * Corner finder based off Tracy's idea that the distance between resampled points
@@ -513,8 +511,7 @@ public class ShortStrawCornerFinder extends CornerFinder
 	/**
 	 * Gets the corners from the resampled points. Works by finding the shortest
 	 * local length around a corner
-	 * 
-	 * @param pts	Points of the stroke
+	 *
 	 * @return		Corners for the stroke
 	 *
 	private ArrayList<Integer> getCornersFromResampleLength(List<TPoint> pts, int window)

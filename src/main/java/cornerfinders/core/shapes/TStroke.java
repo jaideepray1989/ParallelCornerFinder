@@ -242,4 +242,10 @@ public class TStroke{
 		}
 		return min;
 	}
+
+
+    public int getSize()
+    {
+        return pointList.size();
+    }
 }

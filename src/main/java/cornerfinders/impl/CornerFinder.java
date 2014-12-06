@@ -6,18 +6,6 @@ import cornerfinders.core.shapes.TStroke;
 import java.util.ArrayList;
 import java.util.List;
 
-
-/**
- * Methods to contain:
- *   findCorners
- *   arclength
- *   resample points? (probably not...)
- *   segment type (Both brandon & mine?)
- *   euclidean distance
- *   getters & setters
- *
- * @author Aaron Wolin
- */
 public abstract class CornerFinder
 {
 	/**

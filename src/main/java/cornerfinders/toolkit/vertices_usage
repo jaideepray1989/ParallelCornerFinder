@@ -1,0 +1,25 @@
+Blackboard.java:    private static Vertex curvature_vertices[];
+Blackboard.java:    getCurvatureFitOld( Point points[], Vertex vertices[], double scale )
+Blackboard.java:    getCurvatureFit( Point points[], Vertex vertices[], double scale )
+Blackboard.java:        Vertex result_vertices[] = Vertex.vectorToArray( result );
+Blackboard.java:                    Vertex vertices[] = data.vertices;
+Blackboard.java:    leastSquaresForPolygon( Vertex vertices[], Point points[] )
+Blackboard.java:    containsWithTolerance( Vertex vertices[],
+Blackboard.java:    getIndexInVertices( Vertex vertices[],
+Blackboard.java:    removeCloseVertices( Vertex vertices[],
+Blackboard.java:    checkCertaintyBounds( Vertex vertices[] )
+Blackboard.java:    insertVertex( Vertex vertices[], Vertex vertex )
+Blackboard.java:        Vertex vertices[]       = data.vertices;
+Blackboard.java:        Vertex vertices[]         = data.vertices;
+ControlModule.java:            Vertex vertices[] = 
+DirectionChangeScaleSpaceViewer.java:        Vertex fit_vertices[] = new Vertex[3];
+DirectionChangeScaleSpaceViewer.java:        Vertex fit_vertices[] = new Vertex[3];
+Fit.java:    public Vertex vertices[];
+Fit.java:    Fit( Point original_points[], Vertex vertices[], double lsq_error )
+Fit.java:    Fit( Point original_points[], Vertex vertices[] )
+ObjectManager.java:    addVertices( Vertex vertices[] ) {
+SpeedScaleSpaceViewer.java:        Vertex fit_vertices[] = new Vertex[3];
+StrokeData.java:    public Vertex vertices[];
+StrokeData.java:    public StrokeData( Vertex vertices[] )
+StrokeData.java:  public Vertex[] filterVerticesDownToN( Vertex vertices[], int num )
+StrokeData.java:    filterVerticesByLSQE( Vertex vertices[], double percentTolerance )

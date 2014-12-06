@@ -10,8 +10,6 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -603,7 +601,7 @@ public class BStroke extends ArrayList<TPoint> implements StrokeThresholds {
 	 * @param l2 line 2
 	 * @return intersection point between line1 and line2
 	 */
-	public static Point2D getIntersectionPt(Line2D.Double l1, Line2D.Double l2) {
+	public static TPoint getIntersectionPt(Line2D.Double l1, Line2D.Double l2) {
 		Point2D.Double intersect = null;
 		double l1slope = (l1.y2-l1.y1)/(l1.x2-l1.x1);
 		double l2slope = (l2.y2-l2.y1)/(l2.x2-l2.x1);
@@ -614,12 +612,12 @@ public class BStroke extends ArrayList<TPoint> implements StrokeThresholds {
 		if ((l1.x2-l1.x1)==0) {
 			double x = l1.x2;
 			double y = x*l2slope+l2intercept;
-			return new Point2D.Double(x, y);
+			return new TPoint(x, y);
 		}
 		if ((l2.x2-l2.x1)==0) {
 			double x = l2.x2;
 			double y = x*l1slope+l1intercept;
-			return new Point2D.Double(x, y);
+			return new TPoint(x, y);
 		}
 		Matrix a = new Matrix(2,2);
 		Matrix b = new Matrix(2,1);
@@ -679,17 +677,6 @@ public class BStroke extends ArrayList<TPoint> implements StrokeThresholds {
 		for (int i = 0; i < size()-1; i++) {
 			g.drawLine((int)get(i).getX()-offX, (int)get(i).getY()-offY,
 					(int)get(i+1).getX()-offX, (int)get(i+1).getY()-offY);
-		}
-	}
-
-	public void writeToFile(String filename) {
-		File f = new File(filename);
-		try {
-			BufferedImage image = getImage();
-			ImageIO.write(image, "png", f);
-		}
-		catch (IOException e) {
-			System.err.println("Error writing image to file: " + filename);
 		}
 	}
 

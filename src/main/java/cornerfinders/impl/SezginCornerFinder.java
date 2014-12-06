@@ -1,5 +1,9 @@
 package cornerfinders.impl;
 
+import cornerfinders.core.shapes.TLine;
+import cornerfinders.core.shapes.TPoint;
+import cornerfinders.core.shapes.TStroke;
+
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -10,18 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
 
-import edu.tamu.awolin.cornerFinder.CornerFinder.SegType;
-import edu.tamu.awolin.linearClassifier.Features;
-import edu.tamu.hammond.sketch.shapes.TLine;
-import edu.tamu.hammond.sketch.shapes.TPoint;
-import edu.tamu.hammond.sketch.shapes.TStroke;
 
-
-/**
- * Sezgin Corner finder
- * 
- * @author Aaron Wolin
- */
 public class SezginCornerFinder extends CornerFinder
 {
 	private final boolean DEBUG = false;
@@ -54,8 +47,8 @@ public class SezginCornerFinder extends CornerFinder
 	 */
 	public ArrayList<Integer> findCorners(TStroke s)
 	{
-		Features strokeCleaner = new Features();
-		this.stroke = strokeCleaner.cleanStroke(s);
+//		Features strokeCleaner = new Features();
+//		this.stroke = strokeCleaner.cleanStroke(s);
 		
 		this.pts = stroke.getPoints();
 		
@@ -215,8 +208,7 @@ public class SezginCornerFinder extends CornerFinder
 	
 	/**
 	 * Calculates the curvature values at each point
-	 * 
-	 * @param arcLength Arc lengths of the points
+	 *
 	 * @param direction Direction (angles) of the points
 	 * @param smooth Should an average filter be applied?
 	 * @return The curvature value at each point
@@ -493,7 +485,6 @@ public class SezginCornerFinder extends CornerFinder
 	 * @param pts Points of the stroke
 	 * @param curvature Curvature values in an array
 	 * @param speed Speed values in an array
-	 * @param arclength Arc length values in an array
 	 * @param corners Initial fit
 	 * @param Fc Remaining curvature corners
 	 * @param Fs Remaining speed corners
@@ -713,7 +704,6 @@ public class SezginCornerFinder extends CornerFinder
 	 * @param speed Speed values for points
 	 * @param curvature Curvature values for points
 	 * @param arcLength Arc length values for points
-	 * @param corners Corners found
 	 * @return An ArrayList of filtered corners
 	 */
 	private void filterCorners(double[] curvature, double[] speed, double[] arcLength, 
@@ -865,7 +855,6 @@ public class SezginCornerFinder extends CornerFinder
 	 * 
 	 * @param pts Points of the stroke
 	 * @param corners Corner fit to calculate the error for
-	 * @param totalLength Total length of the stroke
 	 * @return The orthogonal distance squared error for the entire stroke
 	 */
 	private double getFitError(List<TPoint> pts, ArrayList<Integer> corners, double[] arcLength)
