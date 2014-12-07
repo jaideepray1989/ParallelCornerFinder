@@ -12,8 +12,14 @@ import com.google.common.collect.Lists;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 /**
  * @author hammond
@@ -255,7 +261,25 @@ public class TStroke {
         }
         return min;
     }
-
+    public static List<TStroke> getTStrokesFromFile(String fileName) {
+        List<TStroke> strokes = null;
+        try {
+            File f = new File(fileName);
+            FileReader reader = new FileReader(f);
+            BufferedReader in = new BufferedReader(reader);
+            String line;
+            StringBuilder xml = new StringBuilder();
+            TStroke t = new TStroke();
+            while ((line = in.readLine()) != null) {
+                xml.append(line);
+            }
+            strokes = getTStrokesFromXML(xml.toString());
+            in.close();
+            reader.close();
+        } catch (IOException ex) {
+        }
+        return strokes;
+    }
 
     public int getSize() {
         return pointList.size();
