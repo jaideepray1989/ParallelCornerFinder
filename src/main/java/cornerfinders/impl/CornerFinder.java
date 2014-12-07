@@ -45,7 +45,6 @@ public abstract class CornerFinder
 	/**
 	 * Calculates the arc length for each point
 	 *
-	 * @param pts Stroke points
 	 * @return Arc length values at each point
 	 */
 	protected double[] arcLength()

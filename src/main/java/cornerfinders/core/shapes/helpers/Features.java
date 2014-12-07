@@ -1,7 +1,9 @@
 package cornerfinders.core.shapes.helpers;
 
+import cornerfinders.core.shapes.RRectangle;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
+import cornerfinders.impl.SezginCornerFinder;
 
 import java.awt.geom.Point2D;
 import java.util.*;

@@ -193,4 +193,11 @@ public class TPoint {
         return Math.sqrt(xdiff * xdiff + ydiff * ydiff);
     }
 
+    public void printPoint()
+    {
+        System.out.print("x :: ".concat(Double.toString(this.getX())));
+        System.out.print("\t y :: ".concat(Double.toString(this.getY())));
+        System.out.println();
+    }
+
 }
