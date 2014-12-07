@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
@@ -16,10 +17,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-
-/**
- * Created by jaideepray on 12/6/14.
- */
 
 public class ParallelMergedCornerFinder {
     private TStroke stroke;
@@ -43,18 +40,18 @@ public class ParallelMergedCornerFinder {
         ListenableFuture<ArrayList<Integer>> sezginFuture = taskRunner.runTask(sezginCallable);
         futuresMap.put(CornerFinderName.SEZGIN, sezginFuture);
         futuresMap.put(CornerFinderName.STRAW, shortStrawFuture);
-        Set<Integer> corners = combine(futuresMap);
-        return processCorners(corners);
+        Set<TPoint> corners = combine(futuresMap);
+        return Lists.newArrayList();
     }
 
-    public Set<Integer> combine(Map<CornerFinderName, ListenableFuture<ArrayList<Integer>>> map) {
-        final Set<Integer> cornerList = Sets.newHashSet();
+    public Set<TPoint> combine(Map<CornerFinderName, ListenableFuture<ArrayList<Integer>>> map) {
+        final Set<TPoint> cornerList = Sets.newHashSet(); // it has all the corners
         for (Map.Entry<CornerFinderName, ListenableFuture<ArrayList<Integer>>> entry : map.entrySet()) {
             Futures.addCallback(entry.getValue(), new FutureCallback<ArrayList<Integer>>() {
                 @Override
                 public void onSuccess(@Nullable ArrayList<Integer> integers) {
                     for (Integer p : integers)
-                        cornerList.add(p);
+                        cornerList.add(stroke.getPoint(p));
                 }
 
                 @Override
@@ -66,7 +63,7 @@ public class ParallelMergedCornerFinder {
         return cornerList;
     }
 
-    public ArrayList<Integer> processCorners(Set<Integer> set) {
+    public ArrayList<TPoint> processCorners(Set<TPoint> set) {
         return Lists.newArrayList(set);
     }
 

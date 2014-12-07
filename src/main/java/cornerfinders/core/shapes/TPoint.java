@@ -115,42 +115,37 @@ public class TPoint {
         m_xList.add(x);
         m_yList.add(y);
         m_time = time;
-    }
-
-
-    public TPoint(String data) {
-        int comma = data.indexOf(",");
-        String x = data.substring(0, comma).trim();
-        data = data.substring(comma + 1);
-        comma = data.indexOf(",");
-        String y = data.substring(0, comma).trim();
-        data = data.substring(comma + 1);
-        String t = data.trim();
-        setP(Double.parseDouble(x), Double.parseDouble(y));
-        setTime(Long.parseLong(t));
+        m_currentElement=m_xList.size()-1;
     }
 
     public static TPoint getFromXML(String xml) {
         double x, y;
         long t;
-        int eq = xml.indexOf("=");
-        xml = xml.substring(eq + 2);
-        int space = xml.indexOf('"');
+        int x_pos, y_pos, t_pos;
+        int space = xml.indexOf("point id");
+        if (space == -1)
+            return null;
+        String xml_point = xml.substring(space);
         try {
-            x = Double.parseDouble(xml.substring(0, space));
-            eq = xml.indexOf("=");
-            xml = xml.substring(eq + 2);
-            space = xml.indexOf('"');
-            y = Double.parseDouble(xml.substring(0, space));
-            eq = xml.indexOf("=");
-            xml = xml.substring(eq + 2);
-            space = xml.indexOf('"');
-            t = Long.parseLong(xml.substring(0, space));
+            String xKey = " x=\"";
+            String yKey = " y=\"";
+            String timeKey = "time=\"";
+            x_pos = xml.indexOf(xKey);
+            y_pos = xml.indexOf(yKey);
+
+            String x_val = xml.substring(x_pos + xKey.length(), y_pos - 1);
+            int end_y_pos = x_pos + xml.substring(x_pos).indexOf(" simpl:id=");
+            String y_val = xml.substring(y_pos + yKey.length(), end_y_pos - 1);
+            x = Double.parseDouble(x_val);
+            y = Double.parseDouble(y_val);
+            t_pos = space + xml_point.indexOf(timeKey);
+            t = Long.parseLong(xml.substring(t_pos + timeKey.length(), x_pos - 1));
             return new TPoint(x, y, t);
         } catch (Exception e) {
             return null;
         }
     }
+
 
     public static TPoint getFromXML_old(String xml) {
         double x, y;
@@ -193,8 +188,7 @@ public class TPoint {
         return Math.sqrt(xdiff * xdiff + ydiff * ydiff);
     }
 
-    public void printPoint()
-    {
+    public void printPoint() {
         System.out.print("x :: ".concat(Double.toString(this.getX())));
         System.out.print("\t y :: ".concat(Double.toString(this.getY())));
         System.out.println();

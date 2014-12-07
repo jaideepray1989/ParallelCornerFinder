@@ -15,7 +15,7 @@ public class SezginCornerFinderTest extends AbstractCornerFinderTest implements 
     public void testCorners() {
         SezginCornerFinder cornerFinder = new SezginCornerFinder();
         TStroke testStroke = TestFigure.getStroke();
-        //super.printCorners(cornerFinder.findCorners(testStroke), testStroke);
+        super.printCorners(cornerFinder.findCorners(testStroke), testStroke);
     }
 }
 

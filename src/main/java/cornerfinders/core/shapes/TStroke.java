@@ -1,14 +1,7 @@
-/**
- * TStroke
- * tamu
- * TStroke.java
- * Created by hammond, Tracy Hammond
- * Created on Oct 6, 2006 2006 9:14:47 AM
- * Copyright Tracy Hammond, Texas A&M University, 2006
- */
 package cornerfinders.core.shapes;
 
 import com.google.common.collect.Lists;
+import cornerfinders.impl.SezginCornerFinder;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 
 
 /**
@@ -63,9 +55,9 @@ public class TStroke {
             double distance = getLastPoint().distance(point);
             if (distance == 0) {
                 return;
-            } else pointList.add(point);
-
+            }
         }
+        pointList.add(point);
     }
 
 
@@ -130,17 +122,6 @@ public class TStroke {
     }
 
 
-    public TStroke(String data) {
-        int semi = data.indexOf(";");
-        while (semi > 0) {
-            String pointdata = data.substring(0, semi).trim();
-            TPoint point = new TPoint(pointdata);
-            addPoint(point);
-            data = data.substring(semi + 1);
-            semi = data.indexOf(";");
-        }
-    }
-
     /**
      * Get a list of all the points in this stroke.
      * Reformats all the components of the shape from a Shape to a Point
@@ -148,27 +129,17 @@ public class TStroke {
      * @return The list of all points.
      */
     public List<TPoint> getPoints() {
-        ArrayList<TPoint> points = new ArrayList<TPoint>();
-        for (int i = 0; i < numPoints(); i++) {
-            if (TPoint.class.isInstance(getPoint(i))) {
-                points.add(getPoint(i));
-            }
-        }
-        return points;
+        return pointList;
     }
 
 
-    /**
-     * Use getTStrokesFromXML(File)
-     *
-     * @deprecated
-     */
     public static List<TStroke> getTStrokesFromXML(String xml) {
         ArrayList<TStroke> strokes = new ArrayList<TStroke>();
-        int closeStroke = xml.indexOf("</Stroke>") - 1;
+        System.out.println(xml);
+        int closeStroke = xml.indexOf("</stroke>") - 1;
         while (closeStroke > 0) {
             TStroke t = new TStroke();
-            String xmlCopy = xml.substring(xml.indexOf("<Stroke"));
+            String xmlCopy = xml.substring(xml.indexOf("<stroke"));
             int colon = xmlCopy.indexOf("=");
             xmlCopy = xmlCopy.substring(colon + 1);
             boolean b = Boolean.parseBoolean(xmlCopy.substring(xmlCopy.indexOf('"'), xmlCopy.indexOf('"')).trim());
@@ -176,7 +147,7 @@ public class TStroke {
             xmlCopy = xmlCopy.substring(colon + 1);
             colon = xmlCopy.indexOf('"');
             xmlCopy = xmlCopy.substring(colon + 1);
-            int type = Integer.parseInt(xmlCopy.substring(0, xmlCopy.indexOf('"')).trim());
+            Long time = Long.parseLong(xmlCopy.substring(0, xmlCopy.indexOf('"')).trim());
             int end = xml.indexOf(">");
             int dis = end + 1;
             xml = xml.substring(end + 1);
@@ -196,7 +167,7 @@ public class TStroke {
                 xml = xml.substring(xml.indexOf("<"));
             } catch (Exception e) {
             }
-            closeStroke = xml.indexOf("</Stroke>") - 1;
+            closeStroke = xml.indexOf("</stroke>") - 1;
             strokes.add(t);
         }
         return strokes;
@@ -261,6 +232,7 @@ public class TStroke {
         }
         return min;
     }
+
     public static List<TStroke> getTStrokesFromFile(String fileName) {
         List<TStroke> strokes = null;
         try {
@@ -289,5 +261,25 @@ public class TStroke {
         for (int i = 0; i < this.getPoints().size(); i++) {
             this.getPoint(i).printPoint();
         }
+    }
+
+    public static void main(String[] args) {
+        String filePath = "/Users/jaideepray/ParallelCornerFinder/src/main/java/cornerfinders/core/shapes/sketchData.xml";
+        List<TStroke> strokes = getTStrokesFromFile(filePath);
+        SezginCornerFinder cornerFinder = new SezginCornerFinder();
+
+        List<TPoint> cornerList = Lists.newArrayList();
+
+        for (TStroke s : strokes) {
+            ArrayList<Integer> corners = cornerFinder.findCorners(s);
+
+            for (Integer index : corners) {
+                System.out.println("printing corner :: ");
+                s.getPoint(index).printPoint();
+                System.out.println("\n ");
+            }
+        }
+
+
     }
 }

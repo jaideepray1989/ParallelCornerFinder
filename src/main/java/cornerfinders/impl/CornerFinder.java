@@ -30,7 +30,7 @@ public abstract class CornerFinder
 
 
 	/**
-	 * Finds corners for the stroke given
+	 * Finds corners for the stroke given (it returns the indices)
 	 *
 	 * @return	Corners for the stroke
 	 */
