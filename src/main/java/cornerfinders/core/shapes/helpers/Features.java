@@ -340,6 +340,7 @@ public class Features
 		List<TPoint> pts = s.getPoints();
 		
 		int i = 0;
+		boolean isChanged = false;
 		do
 		{
 			double x0 = pts.get(i).getX();
@@ -354,11 +355,12 @@ public class Features
 			if (x0 == x1 && y0 == y1)
 			{
 				pts.remove(i + 1);
+				isChanged = true;
 			}
 			else if (t0 == t1)
 			{
 				pts.remove(i+1);
-				
+				isChanged = true;
 				// Probably want to do some average based filtering later
 				//pts.get(i+1).setTime(time);
 			}
@@ -370,7 +372,9 @@ public class Features
 		while (i < pts.size() - 1);
 		
 		// Generate the new stroke
-		s = new TStroke(pts);
+		if(isChanged)	{
+			s = new TStroke(pts);
+		}
 		
 		return s;
 	}

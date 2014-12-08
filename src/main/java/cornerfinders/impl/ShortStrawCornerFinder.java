@@ -212,7 +212,7 @@ public class ShortStrawCornerFinder extends CornerFinder
 		double minY = Double.POSITIVE_INFINITY;
 		double maxY = Double.NEGATIVE_INFINITY;
 		
-		for (int i = 0; i < pts.size() - 1; i++)
+		for (int i = 0; i < pts.size(); i++)
 		{
 			double x = pts.get(i).getX();
 			double y = pts.get(i).getY();
@@ -225,8 +225,8 @@ public class ShortStrawCornerFinder extends CornerFinder
 				minY = y;
 			if (y > maxY)
 				maxY = y;
-			
-			totalLength += distance(pts.get(i), pts.get(i + 1));
+			//not being used - commenting
+			//totalLength += distance(pts.get(i), pts.get(i + 1));
 		}
 		
 		double diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
