@@ -1,4 +1,7 @@
 package utils.dbconnector;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.*;
 import java.io.File;
 import javax.xml.parsers.DocumentBuilder;
@@ -6,6 +9,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
+import com.jcraft.jsch.ChannelSftp;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -24,7 +28,7 @@ public class ConnectDB {
 		   String db_url ,port,db_name,USER,PASS,DB_URL,ssh_user,ssh_pass;
 		   try{
 			
-			   File file= new File("/Users/jaideepray/ParallelCornerFinder/src/main/java/utils/dbconnector/credentials.xml");
+			   File file= new File("src/main/java/utils/dbconnector/credentials.xml");
 			   DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			   DocumentBuilder db = dbf.newDocumentBuilder();
 			   Document doc = db.parse(file);
@@ -39,35 +43,32 @@ public class ConnectDB {
 			   PASS = dElement.getElementsByTagName("password").item(0).getTextContent();
 			   ssh_user = dElement.getElementsByTagName("sshuser").item(0).getTextContent();
 			   ssh_pass = dElement.getElementsByTagName("sshpass").item(0).getTextContent();
-			   
-			   String rhost = "nss326.cse.tamu.edu";
-			   int lport = 5656;
-			   java.util.Properties config = new java.util.Properties(); 
+			   String rhost = dElement.getElementsByTagName("rhost").item(0).getTextContent();;
+			   int lport = 5657;
+     		   java.util.Properties config = new java.util.Properties();
 	           config.put("StrictHostKeyChecking", "no");
+
 			   JSch jsch=new JSch();
-			   Session session= jsch.getSession(ssh_user, db_url, 22);
+			   Session session= jsch.getSession(ssh_user, rhost, 22);
 			   session.setPassword(ssh_pass);
 			   session.setConfig(config);
 			   session.connect();
-			   int assinged_port=session.setPortForwardingL(lport, rhost, Integer.parseInt(port));
-			   DB_URL = "jdbc:mysql://"+db_url+":"+port+"/"+db_name; 
-		        
-			   
+			   session.setPortForwardingL(lport, db_url, Integer.parseInt(port));
+
+			   DB_URL = "jdbc:mysql://"+db_url+":"+lport+"/"+db_name;
 			   //STEP 2: Register JDBC driver
 			   Class.forName(JDBC_DRIVER);
 			   //STEP 3: Open a connection
 			   System.out.println("Connecting to database...");
 			   conn = DriverManager.getConnection(DB_URL,USER,PASS);
 			   System.out.println("Connection Established\n\n");
-			  
-	       }catch(SQLException se){
+
+
+	       }catch(Exception se){
 	    	   //Handle errors for JDBC
 	    	   se.printStackTrace(); 
 	    	   
-	       }catch(Exception e){
-	    	   //Handle errors for Class.forName
-	    	   e.printStackTrace();
-	   }
+	       }
 	   return conn;
 	}
 	public void closeConnection()

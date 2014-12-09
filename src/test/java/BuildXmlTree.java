@@ -12,7 +12,7 @@ public class BuildXmlTree {
     public static void main(String[] args) {
         ConnectDB dbConnect = new ConnectDB();
         Connection conn = dbConnect.startConnection();
-        System.out.println("SketchRec");
+
         String query = "SELECT data from Storage LIMIT 1";
         try {
             Statement stmt = conn.createStatement();
