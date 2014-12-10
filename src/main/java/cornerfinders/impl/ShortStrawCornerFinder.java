@@ -43,12 +43,13 @@ public class ShortStrawCornerFinder extends CornerFinder
 		this.pts = resamplePoints2(stroke, resampleSpacing);
 		this.stroke = new TStroke(pts);
 		arcLength = arcLength();
-		
-		ArrayList<Integer> corners = getCornersFromResampleLength(pts, window);
-		//ArrayList<Integer> corners = straightLineCornerFinder();
-		//ArrayList<Integer> corners = allPoints(pts, window);
-		
-		// Debug: return original points
+		if(pts.size() > (window * 2)) {
+			ArrayList<Integer> corners = getCornersFromResampleLength(pts, window);
+
+			//ArrayList<Integer> corners = straightLineCornerFinder();
+			//ArrayList<Integer> corners = allPoints(pts, window);
+
+			// Debug: return original points
 		/*this.stroke = strokeCleaner.cleanStroke(s);
 		int numPts = stroke.getPoints().size();
 		ArrayList<Integer> origCorners = new ArrayList<Integer>();
@@ -56,9 +57,11 @@ public class ShortStrawCornerFinder extends CornerFinder
 			origCorners.add(i);
 		
 		return origCorners; */
-		
-		return corners;
-		
+
+			return corners;
+		}
+		else
+			return null;
 		//return new ArrayList<Integer>();
 	}
 	

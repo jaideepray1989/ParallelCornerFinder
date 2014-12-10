@@ -65,10 +65,13 @@ public class BuildXmlTree {
                 //for (TStroke s : strokes) {
                 for(TStroke s: newParserStrokes){
                     ArrayList<Integer> corners = cornerFinder.findCorners(s);
-
-                    for (Integer index : corners) {
-                        System.out.println("printing corner :: ");
-                        s.getPoint(index).printPoint();
+                    if(null == corners)
+                        continue;
+                        for (Integer index : corners) {
+                        if(0<= index && index <= s.getSize()) {
+                            System.out.println("printing corner :: ");
+                            s.getPoint(index).printPoint();
+                        }
                     }
                 }
             }
