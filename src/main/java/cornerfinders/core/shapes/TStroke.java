@@ -136,7 +136,7 @@ public class TStroke {
 
     public static List<TStroke> getTStrokesFromXML(String xml) {
         ArrayList<TStroke> strokes = new ArrayList<TStroke>();
-        System.out.println(xml);
+        //System.out.println(xml);
         int closeStroke = xml.indexOf("</stroke>") - 1;
         while (closeStroke > 0) {
             TStroke t = new TStroke();
