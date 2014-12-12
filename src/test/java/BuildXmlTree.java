@@ -2,6 +2,7 @@ import cornerfinders.core.shapes.TStroke;
 import cornerfinders.core.shapes.xml.parser.ShapeParser;
 import cornerfinders.impl.CornerFinder;
 import cornerfinders.impl.KimCornerFinder;
+import cornerfinders.impl.AngleCornerFinder;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
 import utils.dbconnector.ConnectDB;
@@ -60,7 +61,7 @@ public class BuildXmlTree {
                 List<TStroke> newParserStrokes = p.parseIntoStrokes("xmlFileTemp.xml");
                 //List<TStroke> strokes = TStroke.getTStrokesFromXML(data.substring(7));
 
-                CornerFinder cornerFinder = new SezginCornerFinder();
+                CornerFinder cornerFinder = new AngleCornerFinder();
 
                 //for (TStroke s : strokes) {
                 for(TStroke s: newParserStrokes){
