@@ -86,7 +86,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param smooth    Should an average filter be applied?
      * @return Speed values at each point
      */
-    private double[] calcSpeed(List<TPoint> pts, double[] arcLength, boolean smooth) {
+    public double[] calcSpeed(List<TPoint> pts, double[] arcLength, boolean smooth) {
         int numPts = pts.size();
 
         double[] d = arcLength;
@@ -130,7 +130,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param smooth Should an average filter be applied?
      * @return Direction values at each point
      */
-    private double[] calcDirections(List<TPoint> pts, boolean smooth) {
+    public double[] calcDirections(List<TPoint> pts, boolean smooth) {
         int numPts = pts.size();
         double[] direction = new double[numPts];
 
@@ -174,7 +174,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param index Index of the point to check
      * @return The direction at the index point
      */
-    private double direction(List<TPoint> pts, int index) {
+    public double direction(List<TPoint> pts, int index) {
         if (index - 1 >= 0) {
             double dy = pts.get(index).getY() - pts.get(index - 1).getY();
             double dx = pts.get(index).getX() - pts.get(index - 1).getX();
@@ -192,7 +192,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param smooth    Should an average filter be applied?
      * @return The curvature value at each point
      */
-    private double[] calcCurvatures(double[] arclength, double[] direction, boolean smooth) {
+    public double[] calcCurvatures(double[] arclength, double[] direction, boolean smooth) {
         int numPts = direction.length;
         double[] curvature = new double[numPts];
 
@@ -233,7 +233,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param index     Corner index
      * @return The curvature value for a point at the index
      */
-    private double curvature(double[] arcLength, double[] direction, int index, int k) {
+    public double curvature(double[] arcLength, double[] direction, int index, int k) {
         int start = index - k;
         if (index - k < 0)
             start = 0;
@@ -256,7 +256,7 @@ public class SezginCornerFinder extends CornerFinder {
             return 0.0;
         }
     }
-	
+
 	
 	
 	
@@ -271,7 +271,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param curvature Curvature values for each point
      * @return An ArrayList of indices indicating corners
      */
-    private ArrayList<Integer> getCornersFromCurvature(double[] curvature) {
+    public ArrayList<Integer> getCornersFromCurvature(double[] curvature) {
         ArrayList<Integer> corners = new ArrayList<Integer>();
 
         double minCurvature = Double.POSITIVE_INFINITY;
@@ -335,7 +335,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param speed Speed values for each point
      * @return An ArrayList of indices indicating corners
      */
-    private ArrayList<Integer> getCornersFromSpeed(double[] speed) {
+    public ArrayList<Integer> getCornersFromSpeed(double[] speed) {
         ArrayList<Integer> corners = new ArrayList<Integer>();
 
         double minSpeed = Double.POSITIVE_INFINITY;
@@ -400,7 +400,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param Fs Speed corners
      * @return intersection(Fc, Fs)
      */
-    private ArrayList<Integer> initialFit(ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
+    public ArrayList<Integer> initialFit(ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
         ArrayList<Integer> corners = new ArrayList<Integer>();
 
         // Initial fit is comprised of the intersection of
@@ -443,7 +443,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param Fs        Remaining speed corners
      * @return Corners representing the best hybrid fit for the stroke
      */
-    private ArrayList<Integer> hybridFit(List<TPoint> pts, double[] curvature, double[] speed,
+    public ArrayList<Integer> hybridFit(List<TPoint> pts, double[] curvature, double[] speed,
                                          double[] arcLength, ArrayList<Integer> corners, ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
         // Filter out similar corners
         filterCorners(curvature, speed, arcLength, Fc, Fs);
@@ -560,7 +560,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param corners   Corners to calculate the metric for
      * @return A sorted (ascending) TreeMap mapping the metric value with the corner
      */
-    private TreeMap<Double, Integer> calculateCurvatureMetrics(double[] curvature,
+    public TreeMap<Double, Integer> calculateCurvatureMetrics(double[] curvature,
                                                                double[] arcLength, ArrayList<Integer> corners) {
         TreeMap<Double, Integer> curvatureMetrics = new TreeMap<Double, Integer>();
 
@@ -580,7 +580,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param corners  Corners to calculate the metric for
      * @return A sorted (ascending) TreeMap mapping the metric value with the corner
      */
-    private TreeMap<Double, Integer> calculateSpeedMetrics(double[] speed,
+    public TreeMap<Double, Integer> calculateSpeedMetrics(double[] speed,
                                                            double maxSpeed, ArrayList<Integer> corners) {
         TreeMap<Double, Integer> speedMetrics = new TreeMap<Double, Integer>();
 
@@ -600,7 +600,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param index     Index of the point (corner)
      * @return The computed metric
      */
-    private double CCM(double[] curvature, double[] arclength, int index) {
+    public double CCM(double[] curvature, double[] arclength, int index) {
         int k = 3;
 
         int start = index - k;
@@ -628,7 +628,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param index    Index of the point (corner)
      * @return The computed metric
      */
-    private double SCM(double[] speed, double maxSpeed, int index) {
+    public double SCM(double[] speed, double maxSpeed, int index) {
         if (maxSpeed > 0.0)
             return 1.0 - (speed[index] / maxSpeed);
         else
@@ -644,7 +644,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param arcLength Arc length values for points
      * @return An ArrayList of filtered corners
      */
-    private void filterCorners(double[] curvature, double[] speed, double[] arcLength,
+    public void filterCorners(double[] curvature, double[] speed, double[] arcLength,
                                ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
         ArrayList<Integer> corners = new ArrayList<Integer>();
         corners.addAll(Fc);
@@ -727,7 +727,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param index2    Index of corner 2
      * @return True if the two corners are similar to one another
      */
-    private boolean areCornersSimilar(double[] arcLength, int index1, int index2) {
+    public boolean areCornersSimilar(double[] arcLength, int index1, int index2) {
         // Pixel threshold to see if corners are too close
         double distThreshold = 15.0;
 
@@ -755,7 +755,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param arcLength Arc length value at each point
      * @return True if the segment is a line, False if the segment is an arc
      */
-    private boolean isLine(int p1, int p2, List<TPoint> pts, double[] arcLength) {
+    public boolean isLine(int p1, int p2, List<TPoint> pts, double[] arcLength) {
         if (getSegmentType(p1, p2) == SegType.Line)
             return true;
         else
@@ -770,7 +770,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param corners Corner fit to calculate the error for
      * @return The orthogonal distance squared error for the entire stroke
      */
-    private double getFitError(List<TPoint> pts, ArrayList<Integer> corners, double[] arcLength) {
+    public double getFitError(List<TPoint> pts, ArrayList<Integer> corners, double[] arcLength) {
         int numCorners = corners.size();
 
         double totalError = 0.0;
@@ -801,7 +801,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param arcLength Arc length array of the stroke
      * @return Segmentation error
      */
-    private double segmentError(List<TPoint> pts, int p1, int p2, double[] arcLength) {
+    public double segmentError(List<TPoint> pts, int p1, int p2, double[] arcLength) {
         double error = 0.0;
 
         if (getSegmentType(p1, p2) == SegType.Line) {
@@ -822,7 +822,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param p2  End point two of the line (corner 2)
      * @return The ODSQ value for the segment
      */
-    private double orthogonalDistanceSquared(List<TPoint> pts, int p1, int p2) {
+    public double orthogonalDistanceSquared(List<TPoint> pts, int p1, int p2) {
         double error = 0.0;
 
         // Set the line between the corners
@@ -863,7 +863,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param p2  End point two of the line (corner 2)
      * @return The ODSQ value for the segment
      */
-    private double arcOrthogonalDistanceSquared(List<TPoint> pts, int p1, int p2) {
+    public double arcOrthogonalDistanceSquared(List<TPoint> pts, int p1, int p2) {
         double error = 0.0;
 
         // Set the line between the corners
@@ -961,7 +961,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param pt4
      * @return
      */
-    private boolean isIntersection(TPoint pt1, TPoint pt2, TPoint pt3, TPoint pt4) {
+    public boolean isIntersection(TPoint pt1, TPoint pt2, TPoint pt3, TPoint pt4) {
         // A
         double Ax = pt1.getX();
         double Ay = pt1.getY();
@@ -1031,7 +1031,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param direction Directions of a stroke
      * @param arcLength Arclength values of a stroke
      */
-    private void outputDirectionGraph(double[] direction, double[] arcLength) {
+    public void outputDirectionGraph(double[] direction, double[] arcLength) {
         try {
             FileOutputStream fout = new FileOutputStream("dirGraph.txt");
             PrintStream p = new PrintStream(fout);
@@ -1055,7 +1055,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param curvature Curvatures of a stroke
      * @param arcLength Arclength values of a stroke
      */
-    private void outputCurvatureGraph(double[] curvature, double[] arcLength) {
+    public void outputCurvatureGraph(double[] curvature, double[] arcLength) {
         try {
             FileOutputStream fout = new FileOutputStream("curvGraph.txt");
             PrintStream p = new PrintStream(fout);
@@ -1079,7 +1079,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param speed     Speeds of a stroke
      * @param arcLength Arclength values of a stroke
      */
-    private void outputSpeedGraph(double[] speed, double[] arcLength) {
+    public void outputSpeedGraph(double[] speed, double[] arcLength) {
         try {
             FileOutputStream fout = new FileOutputStream("speedGraph.txt");
             PrintStream p = new PrintStream(fout);
@@ -1105,7 +1105,7 @@ public class SezginCornerFinder extends CornerFinder {
      * @param arcLength Arclength values of a stroke
      * @param corners   Corners of a stroke
      */
-    private void outputCornerGraph(double[] curvature, double[] speed, double[] arcLength,
+    public void outputCornerGraph(double[] curvature, double[] speed, double[] arcLength,
                                    ArrayList<Integer> corners) {
         try {
             FileOutputStream fout = new FileOutputStream("cornerGraph.txt");
