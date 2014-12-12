@@ -7,8 +7,10 @@ import java.util.List;
 import utils.dbconnector.ConnectDB;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.core.shapes.xml.parser.ShapeParser;
+import cornerfinders.impl.AngleCornerFinder;
 import cornerfinders.impl.CornerFinder;
 import cornerfinders.impl.KimCornerFinder;
+import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
 
 public class BuildXmlTree {
@@ -17,7 +19,7 @@ public class BuildXmlTree {
 		ConnectDB dbConnect = new ConnectDB();
 		Connection conn = dbConnect.startConnection();
 
-		String query = "SELECT data from Storage LIMIT 2";
+		String query = "SELECT data from Storage LIMIT 1";
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
@@ -28,21 +30,17 @@ public class BuildXmlTree {
 				ShapeParser p = new ShapeParser();
 				List<TStroke> newParserStrokes = p.parseIntoStrokes(data
 						.substring(7));
-				// List<TStroke> strokes =
-				// TStroke.getTStrokesFromXML(data.substring(7));
 
-				CornerFinder cornerFinder = new ShortStrawCornerFinder();
+				CornerFinder cornerFinder = new AngleCornerFinder();
 
-				// for (TStroke s : strokes) {
 				for (TStroke s : newParserStrokes) {
 					ArrayList<Integer> corners = cornerFinder.findCorners(s);
+					s = cornerFinder.getStroke();
 					if (null == corners)
 						continue;
 					for (Integer index : corners) {
-						if (0 <= index && index <= s.getSize()) {
-							System.out.println("printing corner :: ");
-							s.getPoint(index).printPoint();
-						}
+						System.out.println("printing corner :: ");
+						s.getPoint(index).printPoint();
 					}
 				}
 			}
