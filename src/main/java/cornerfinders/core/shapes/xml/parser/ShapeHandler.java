@@ -43,7 +43,7 @@ public class ShapeHandler extends DefaultHandler {
 			switch (attrType) {
 			case 0:
 				stroke = new TStroke();
-				System.out.println("Adding a Stroke");
+				//System.out.println("Adding a Stroke");
 				break;
 			case 1:
 
@@ -52,8 +52,7 @@ public class ShapeHandler extends DefaultHandler {
 					String yVal = attributes.getValue("y");
 					String timeVal = attributes.getValue("time");
 					if (xVal != null) {
-						System.out.println("Adding a point - x : " + xVal
-								+ " y : " + yVal + " time: " + timeVal);
+						//System.out.println("Adding a point - x : " + xVal + " y : " + yVal + " time: " + timeVal);
 						point = new TPoint(Double.parseDouble(xVal),
 								Double.parseDouble(yVal),
 								Long.parseLong(timeVal));
@@ -64,7 +63,6 @@ public class ShapeHandler extends DefaultHandler {
 				break;
 			}
 		}
-
 	}
 
 	@Override

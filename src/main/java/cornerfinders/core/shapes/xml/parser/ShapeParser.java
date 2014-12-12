@@ -1,5 +1,8 @@
 package cornerfinders.core.shapes.xml.parser;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.xml.parsers.SAXParser;
@@ -9,7 +12,7 @@ import cornerfinders.core.shapes.TStroke;
 
 public class ShapeParser {
 
-	public List<TStroke> parseIntoStrokes(String filePath) {
+	public List<TStroke> parseIntoStrokes(String xml) {
 
 		List<TStroke> parsedStrokes = null;
 		try {
@@ -18,13 +21,15 @@ public class ShapeParser {
 
 			ShapeHandler shapeHandler = new ShapeHandler();
 
-			parser.parse(filePath, shapeHandler);
+			InputStream is = new BufferedInputStream(new ByteArrayInputStream(
+					xml.getBytes()));
+			parser.parse(is, shapeHandler);
 			parsedStrokes = shapeHandler.getAllStrokes();
+
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 		return parsedStrokes;
-
 	}
 
 }
