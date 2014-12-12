@@ -1,5 +1,6 @@
 package cornerfinders.impl;
 
+
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.core.shapes.helpers.Features;
@@ -7,7 +8,6 @@ import cornerfinders.core.shapes.helpers.Features;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 /**
  * My Kim-Kim corner finder implementation
  * 
@@ -32,6 +32,7 @@ public class KimCornerFinder extends CornerFinder
 	 */
 	public ArrayList<Integer> findCorners(TStroke s)
 	{
+		long startTime = System.nanoTime();
 		Features strokeCleaner = new Features();
 		this.stroke = strokeCleaner.cleanStroke(s);
 		
@@ -46,7 +47,8 @@ public class KimCornerFinder extends CornerFinder
 		
 		ArrayList<Integer> corners = getKimFit(curvature);
 		filterCorners(curvature, arcLength, corners);
-			
+		long elapsed = System.nanoTime() - startTime;
+		System.out.println("Time taken by Kim & kim Corner finder:"+ elapsed);
 		return corners;
 	}
 	

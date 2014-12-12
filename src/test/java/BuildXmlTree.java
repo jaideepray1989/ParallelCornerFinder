@@ -61,7 +61,7 @@ public class BuildXmlTree {
                 List<TStroke> newParserStrokes = p.parseIntoStrokes("xmlFileTemp.xml");
                 //List<TStroke> strokes = TStroke.getTStrokesFromXML(data.substring(7));
 
-                CornerFinder cornerFinder = new AngleCornerFinder();
+                CornerFinder cornerFinder = new KimCornerFinder();
 
                 //for (TStroke s : strokes) {
                 for(TStroke s: newParserStrokes){
