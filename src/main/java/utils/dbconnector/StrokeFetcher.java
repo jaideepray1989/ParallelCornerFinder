@@ -3,6 +3,7 @@ package utils.dbconnector;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import cornerfinders.core.shapes.TStroke;
@@ -12,11 +13,11 @@ public class StrokeFetcher {
 
 	public static List<TStroke> fetchAllStrokes() {
 
-		List<TStroke> newParserStrokes = null;
+		List<TStroke> newParserStrokes = new ArrayList<TStroke>();
 		ConnectDB dbConnect = new ConnectDB();
 		Connection conn = dbConnect.startConnection();
 
-		String query = "SELECT data from Storage LIMIT 1";
+		String query = "SELECT data from Storage LIMIT 10";
 		try {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(query);
@@ -25,7 +26,7 @@ public class StrokeFetcher {
 				System.out.println(data.substring(7));
 
 				ShapeParser p = new ShapeParser();
-				newParserStrokes = p.parseIntoStrokes(data.substring(7));
+				newParserStrokes.addAll(p.parseIntoStrokes(data.substring(7)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
