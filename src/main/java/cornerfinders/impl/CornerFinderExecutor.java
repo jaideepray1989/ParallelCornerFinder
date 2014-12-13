@@ -16,6 +16,7 @@ public class CornerFinderExecutor {
 
 		List<TStroke> strokes = StrokeFetcher.fetchAllStrokes();
 
+		
 		for (AbstractCornerFinder cornerFinder : allCornerFinders) {
 			for (TStroke s : strokes) {
 				ArrayList<Integer> corners = cornerFinder.findCorners(s);
@@ -28,6 +29,7 @@ public class CornerFinderExecutor {
 				}
 			}
 		}
+		System.out.println("Size: " + strokes.size());
 	}
 
 	public static void main(String[] args) {
