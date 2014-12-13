@@ -47,7 +47,7 @@ public abstract class CornerFinder
 	 *
 	 * @return Arc length values at each point
 	 */
-	protected double[] arcLength()
+	public double[] arcLength()
 	{
 		int numPts = pts.size();
 
