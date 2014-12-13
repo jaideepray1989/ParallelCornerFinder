@@ -2,6 +2,7 @@ package cornerfinders.core.shapes;
 
 import com.google.common.collect.Lists;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TPoint {
@@ -115,7 +116,7 @@ public class TPoint {
         m_xList.add(x);
         m_yList.add(y);
         m_time = time;
-        m_currentElement=m_xList.size()-1;
+        m_currentElement = m_xList.size() - 1;
     }
 
     public static TPoint getFromXML(String xml) {
@@ -189,8 +190,9 @@ public class TPoint {
     }
 
     public void printPoint() {
-        System.out.print("x :: ".concat(Double.toString(this.getX())));
-        System.out.print("\t y :: ".concat(Double.toString(this.getY())));
+        DecimalFormat df = new DecimalFormat("#");
+        System.out.print("x :: ".concat(df.format(this.getX())));
+        System.out.print("\t y :: ".concat(df.format(this.getY())));
         System.out.println();
     }
 

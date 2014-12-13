@@ -50,9 +50,9 @@ public class SketchDataValidator {
         return stroke;
     }
 
-    public static Optional<List<TStroke>> validateSketch(List<TStroke> strokeList) {
-        if (strokeList.isEmpty())
-            return Optional.empty();
+    public static List<TStroke> validateSketch(List<TStroke> strokeList) {
+        if (strokeList == null || strokeList.isEmpty())
+            return null;
         List<TStroke> validatedStrokes = Lists.newArrayList();
         for (TStroke stroke : strokeList) {
             if (!isValidStroke(stroke)) {
@@ -61,7 +61,7 @@ public class SketchDataValidator {
             validatedStrokes.add(stroke);
         }
         if (validatedStrokes.size() > 0)
-            return Optional.of(validatedStrokes);
-        return Optional.empty();
+            return validatedStrokes;
+        return null;
     }
 }

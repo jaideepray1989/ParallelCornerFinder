@@ -29,14 +29,14 @@ public class DBUtils {
                 ShapeParser p = new ShapeParser();
                 List<TStroke> strokes = p.parseIntoStrokes(data
                         .substring(7));
-                Optional<List<TStroke>> validatedStrokes = SketchDataValidator.validateSketch(strokes);
-                if (validatedStrokes.isPresent()) {
-                    parsedMap.put("Shape".concat(counter.toString()), validatedStrokes.get());
+                List<TStroke> validatedStrokes = SketchDataValidator.validateSketch(strokes);
+                if (validatedStrokes != null) {
+                    parsedMap.put("Shape".concat(counter.toString()), validatedStrokes);
                     counter++;
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         } finally {
             dbConnect.closeConnection();
         }

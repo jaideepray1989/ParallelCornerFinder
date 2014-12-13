@@ -8,6 +8,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
+import cornerfinders.impl.AngleCornerFinder;
+import cornerfinders.impl.KimCornerFinder;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
 import cornerfinders.parallel.callable.CornerFinderCallable;
@@ -22,12 +24,16 @@ public class ParallelMergedCornerFinder {
     private TStroke stroke;
     private ShortStrawCornerFinder shortStrawCornerFinder;
     private SezginCornerFinder sezginCornerFinder;
+    private KimCornerFinder kimCornerFinder;
+    private AngleCornerFinder angleCornerFinder;
     private TaskRunner<ArrayList<Integer>> taskRunner;
 
     public ParallelMergedCornerFinder(TStroke s) {
         stroke = s;
         shortStrawCornerFinder = new ShortStrawCornerFinder();
         sezginCornerFinder = new SezginCornerFinder();
+        kimCornerFinder = new KimCornerFinder();
+        angleCornerFinder = new AngleCornerFinder();
         // has to be injected
         taskRunner = new TaskRunner<ArrayList<Integer>>(10);
     }
@@ -36,10 +42,16 @@ public class ParallelMergedCornerFinder {
         Map<CornerFinderName, ListenableFuture<ArrayList<Integer>>> futuresMap = Maps.newHashMap();
         CornerFinderCallable shortStrawCallable = new CornerFinderCallable(this.stroke, shortStrawCornerFinder);
         CornerFinderCallable sezginCallable = new CornerFinderCallable(stroke, sezginCornerFinder);
+        CornerFinderCallable kimCallable = new CornerFinderCallable(stroke, kimCornerFinder);
+        CornerFinderCallable angleCornerCallable = new CornerFinderCallable(stroke, angleCornerFinder);
         ListenableFuture<ArrayList<Integer>> shortStrawFuture = taskRunner.runTask(shortStrawCallable);
         ListenableFuture<ArrayList<Integer>> sezginFuture = taskRunner.runTask(sezginCallable);
+        ListenableFuture<ArrayList<Integer>> kimFuture = taskRunner.runTask(kimCallable);
+        ListenableFuture<ArrayList<Integer>> angleFuture = taskRunner.runTask(angleCornerCallable);
         futuresMap.put(CornerFinderName.SEZGIN, sezginFuture);
         futuresMap.put(CornerFinderName.STRAW, shortStrawFuture);
+        futuresMap.put(CornerFinderName.KIM, kimFuture);
+        futuresMap.put(CornerFinderName.ANGLE, angleFuture);
         Set<TPoint> corners = combine(futuresMap);
         return Lists.newArrayList();
     }
