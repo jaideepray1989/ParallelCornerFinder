@@ -8,12 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Arrays;
 
-/**
- * Corner finder based off Tracy's idea that the distance between resampled
- * points is small around corners
- * 
- * @author Aaron Wolin
- */
 public class ShortStrawCornerFinder extends AbstractCornerFinder {
 	private final boolean DEBUG = false;
 
