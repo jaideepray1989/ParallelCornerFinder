@@ -3,10 +3,11 @@ import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
-import utils.dbconnector.ConnectDB;
+import utils.validator.SketchDataValidator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jaideepray on 12/12/14.
@@ -26,28 +27,31 @@ public class CheckAccuracyCF {
     }
 
     public static void checkAccuracy() {
-        DBUtils dbUtils = new DBUtils();
         ShortStrawCornerFinder strawCornerFinder = new ShortStrawCornerFinder();
         SezginCornerFinder sezginCornerFinder = new SezginCornerFinder();
-        List<TStroke> strokeList = dbUtils.fetchStrokes(1);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(10);
         List<TPoint> strawCorners = Lists.newArrayList();
         List<TPoint> sezginCorners = Lists.newArrayList();
-        for (TStroke s : strokeList) {
-            if (s.getPoints().size() < 30)
-                continue;
-            ArrayList<Integer> c1 = strawCornerFinder.findCorners(s);
-            ArrayList<Integer> c2 = sezginCornerFinder.findCorners(s);
-            List<TPoint> stC = fetchCornerPoints(s, c1);
-            if (!stC.isEmpty())
-                strawCorners.addAll(stC);
-            List<TPoint> szC = fetchCornerPoints(s, c2);
-            if (!szC.isEmpty())
-                sezginCorners.addAll(szC);
+        for (List<TStroke> sList : strokeMap.values()) {
+            for (TStroke s : sList) {
+                if (!SketchDataValidator.isValidStroke(s)) continue;
+                ArrayList<Integer> c1 = strawCornerFinder.findCorners(s);
+                ArrayList<Integer> c2 = sezginCornerFinder.findCorners(s);
+                List<TPoint> stC = fetchCornerPoints(s, c1);
+                if (!stC.isEmpty())
+                    strawCorners.addAll(stC);
+                List<TPoint> szC = fetchCornerPoints(s, c2);
+                if (!szC.isEmpty())
+                    sezginCorners.addAll(szC);
+            }
+            System.out.println("------------------------------------");
+            System.out.println("SHORT STRAW");
+            printCorners(strawCorners);
+            System.out.println("SEZGIN");
+            printCorners(sezginCorners);
+            System.out.println("------------------------------------");
         }
-        System.out.println("SHORT STRAW");
-        printCorners(strawCorners);
-        System.out.println("SEZGIN");
-        printCorners(sezginCorners);
+
     }
 
     public static void printCorners(List<TPoint> corners) {
@@ -55,11 +59,6 @@ public class CheckAccuracyCF {
         for (TPoint pt : corners) {
             pt.printPoint();
         }
-    }
-
-
-    public double similarCorners(List<TPoint> c1, List<TPoint> c2) {
-        return 0.0;
     }
 
     public static void main(String[] args) {

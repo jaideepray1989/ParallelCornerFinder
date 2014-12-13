@@ -44,6 +44,10 @@ public class TStroke {
         }
     }
 
+    public void deleteInvalidPoint(TPoint point) {
+        this.getPoints().remove(point);
+    }
+
 
     /**
      * Adds a point to the stroke.
@@ -264,7 +268,7 @@ public class TStroke {
         }
     }
 
-//    public static void main(String[] args) {
+    //    public static void main(String[] args) {
 //        String filePath = "C:\\Users\\Anurag Garg\\Documents\\csce624\\ParallelCornerFinder\\src\\main\\java\\cornerfinders\\core\\shapes\\sketchData.xml";
 //        List<TStroke> strokes = getTStrokesFromFile(filePath);
 //        SezginCornerFinder cornerFinder = new SezginCornerFinder();
@@ -286,10 +290,9 @@ public class TStroke {
     public static void main(String[] args) {
         String filePath = "C:\\Users\\Anurag Garg\\Documents\\csce624\\ParallelCornerFinder\\src\\main\\java\\cornerfinders\\core\\shapes\\sketchData.xml";
         List<TStroke> strokes = getTStrokesFromFile(filePath);
-        int i=0;
-        for (TStroke s : strokes )
-        {
-            System.out.println((++i)+" stroke points:"+s.numPoints());
+        int i = 0;
+        for (TStroke s : strokes) {
+            System.out.println((++i) + " stroke points:" + s.numPoints());
         }
         System.out.println(strokes);
         KimCornerFinder cornerFinder = new KimCornerFinder();

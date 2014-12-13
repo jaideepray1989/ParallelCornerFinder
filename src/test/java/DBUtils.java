@@ -1,38 +1,46 @@
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.core.shapes.xml.parser.ShapeParser;
 import utils.dbconnector.ConnectDB;
+import utils.validator.SketchDataValidator;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class DBUtils {
 
-    public List<TStroke> fetchStrokes(int numData) {
+    public static Map<String, List<TStroke>> fetchStrokes(int numData) {
         ConnectDB dbConnect = new ConnectDB();
         Connection conn = dbConnect.startConnection();
-        List<TStroke> newParserStrokes = Lists.newArrayList();
+        Map<String, List<TStroke>> parsedMap = Maps.newHashMap();
         String query = "SELECT data from Storage LIMIT " + numData;
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(query);
+            Integer counter = 1;
             while (rs.next()) {
                 String data = rs.getString("data");
                 System.out.println(data.substring(7));
-
                 ShapeParser p = new ShapeParser();
-                newParserStrokes = p.parseIntoStrokes(data
+                List<TStroke> strokes = p.parseIntoStrokes(data
                         .substring(7));
+                Optional<List<TStroke>> validatedStrokes = SketchDataValidator.validateSketch(strokes);
+                if (validatedStrokes.isPresent()) {
+                    parsedMap.put("Shape".concat(counter.toString()), validatedStrokes.get());
+                    counter++;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             dbConnect.closeConnection();
         }
-        return newParserStrokes;
+        return parsedMap;
     }
 }
 

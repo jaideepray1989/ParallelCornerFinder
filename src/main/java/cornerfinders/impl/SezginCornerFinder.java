@@ -1,8 +1,10 @@
 package cornerfinders.impl;
 
+import com.google.common.collect.Lists;
 import cornerfinders.core.shapes.TLine;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
+import utils.validator.SketchDataValidator;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -38,12 +40,12 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @param s Stroke to find the corners for
      * @return Corners of a stroke
      */
+
+
     public ArrayList<Integer> findCorners(TStroke s) {
-//		Features strokeCleaner = new Features();
-//		this.stroke = strokeCleaner.cleanStroke(s);
 
         stroke = s;
-        this.pts = stroke.getPoints();
+        this.pts = s.getPoints();
 
         // Get the arc length at each point
         arcLength = arcLength();
@@ -261,7 +263,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
 	
 	
 	/*
-	 * Generate corner fits
+     * Generate corner fits
 	 */
 
     /**
@@ -444,7 +446,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @return Corners representing the best hybrid fit for the stroke
      */
     public ArrayList<Integer> hybridFit(List<TPoint> pts, double[] curvature, double[] speed,
-                                         double[] arcLength, ArrayList<Integer> corners, ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
+                                        double[] arcLength, ArrayList<Integer> corners, ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
         // Filter out similar corners
         filterCorners(curvature, speed, arcLength, Fc, Fs);
 
@@ -544,12 +546,12 @@ public class SezginCornerFinder extends AbstractCornerFinder {
 
         return bestFit;
     }
-	
+
 	
 	
 	
 	/*
-	 * Metrics for curvature and speed 
+     * Metrics for curvature and speed
 	 */
 
     /**
@@ -561,7 +563,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @return A sorted (ascending) TreeMap mapping the metric value with the corner
      */
     public TreeMap<Double, Integer> calculateCurvatureMetrics(double[] curvature,
-                                                               double[] arcLength, ArrayList<Integer> corners) {
+                                                              double[] arcLength, ArrayList<Integer> corners) {
         TreeMap<Double, Integer> curvatureMetrics = new TreeMap<Double, Integer>();
 
         for (Integer c : corners) {
@@ -581,7 +583,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @return A sorted (ascending) TreeMap mapping the metric value with the corner
      */
     public TreeMap<Double, Integer> calculateSpeedMetrics(double[] speed,
-                                                           double maxSpeed, ArrayList<Integer> corners) {
+                                                          double maxSpeed, ArrayList<Integer> corners) {
         TreeMap<Double, Integer> speedMetrics = new TreeMap<Double, Integer>();
 
         for (Integer c : corners) {
@@ -645,7 +647,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @return An ArrayList of filtered corners
      */
     public void filterCorners(double[] curvature, double[] speed, double[] arcLength,
-                               ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
+                              ArrayList<Integer> Fc, ArrayList<Integer> Fs) {
         ArrayList<Integer> corners = new ArrayList<Integer>();
         corners.addAll(Fc);
         corners.addAll(Fs);
@@ -996,12 +998,12 @@ public class SezginCornerFinder extends AbstractCornerFinder {
 
         return false;
     }
-	
+
 	
 	
 	
 	/*
-	 * Getter methods
+     * Getter methods
 	 */
 
     public double getAvgCurvature() {
@@ -1106,7 +1108,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @param corners   Corners of a stroke
      */
     public void outputCornerGraph(double[] curvature, double[] speed, double[] arcLength,
-                                   ArrayList<Integer> corners) {
+                                  ArrayList<Integer> corners) {
         try {
             FileOutputStream fout = new FileOutputStream("cornerGraph.txt");
             PrintStream p = new PrintStream(fout);
