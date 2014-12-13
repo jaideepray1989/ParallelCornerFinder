@@ -268,25 +268,6 @@ public class TStroke {
         }
     }
 
-    //    public static void main(String[] args) {
-//        String filePath = "C:\\Users\\Anurag Garg\\Documents\\csce624\\ParallelCornerFinder\\src\\main\\java\\cornerfinders\\core\\shapes\\sketchData.xml";
-//        List<TStroke> strokes = getTStrokesFromFile(filePath);
-//        SezginCornerFinder cornerFinder = new SezginCornerFinder();
-//
-//        List<TPoint> cornerList = Lists.newArrayList();
-//
-//        for (TStroke s : strokes) {
-//            ArrayList<Integer> corners = cornerFinder.findCorners(s);
-//
-//            for (Integer index : corners) {
-//                System.out.println("printing corner :: ");
-//                s.getPoint(index).printPoint();
-//                System.out.println("\n ");
-//            }
-//        }
-//
-//
-//    }
     public static void main(String[] args) {
         String filePath = "C:\\Users\\Anurag Garg\\Documents\\csce624\\ParallelCornerFinder\\src\\main\\java\\cornerfinders\\core\\shapes\\sketchData.xml";
         List<TStroke> strokes = getTStrokesFromFile(filePath);

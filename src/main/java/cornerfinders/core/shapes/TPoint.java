@@ -99,7 +99,7 @@ public class TPoint {
     }
 
     public long getTime() {
-        return m_time;
+        return (m_time==null)?1:m_time;
     }
 
     /**

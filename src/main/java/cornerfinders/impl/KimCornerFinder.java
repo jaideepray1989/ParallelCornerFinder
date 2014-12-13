@@ -8,11 +8,7 @@ import cornerfinders.core.shapes.helpers.Features;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-/**
- * My Kim-Kim corner finder implementation
- * 
- * @author Aaron Wolin
- */
+
 public class KimCornerFinder extends AbstractCornerFinder
 {
 	private final boolean DEBUG = false;
@@ -48,7 +44,7 @@ public class KimCornerFinder extends AbstractCornerFinder
 		ArrayList<Integer> corners = getKimFit(curvature);
 		filterCorners(curvature, arcLength, corners);
 		long elapsed = System.nanoTime() - startTime;
-		System.out.println("Time taken by Kim & kim Corner finder:"+ elapsed);
+		//System.out.println("Time taken by Kim & kim Corner finder:"+ elapsed);
 		return corners;
 	}
 	

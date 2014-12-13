@@ -18,9 +18,7 @@ public class ShapeParser {
         try {
             SAXParserFactory parserFactory = SAXParserFactory.newInstance();
             SAXParser parser = parserFactory.newSAXParser();
-
             ShapeHandler shapeHandler = new ShapeHandler();
-
             InputStream is = new BufferedInputStream(new ByteArrayInputStream(
                     xml.getBytes()));
             parser.parse(is, shapeHandler);
