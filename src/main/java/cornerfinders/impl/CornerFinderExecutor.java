@@ -8,7 +8,7 @@ import utils.dbconnector.StrokeFetcher;
 
 public class CornerFinderExecutor {
 
-	private static CornerFinder[] allCornerFinders = new CornerFinder[] {
+	private static AbstractCornerFinder[] allCornerFinders = new AbstractCornerFinder[] {
 			new SezginCornerFinder(), new KimCornerFinder(),
 			new ShortStrawCornerFinder() };
 
@@ -16,7 +16,7 @@ public class CornerFinderExecutor {
 
 		List<TStroke> strokes = StrokeFetcher.fetchAllStrokes();
 
-		for (CornerFinder cornerFinder : allCornerFinders) {
+		for (AbstractCornerFinder cornerFinder : allCornerFinders) {
 			for (TStroke s : strokes) {
 				ArrayList<Integer> corners = cornerFinder.findCorners(s);
 				s = cornerFinder.getStroke();

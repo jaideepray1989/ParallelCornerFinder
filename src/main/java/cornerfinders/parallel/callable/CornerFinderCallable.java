@@ -1,7 +1,7 @@
 package cornerfinders.parallel.callable;
 
 import cornerfinders.core.shapes.TStroke;
-import cornerfinders.impl.CornerFinder;
+import cornerfinders.impl.AbstractCornerFinder;
 import utils.ITask;
 
 import java.util.ArrayList;
@@ -9,9 +9,9 @@ import java.util.ArrayList;
 public class CornerFinderCallable implements ITask<ArrayList<Integer>> {
 
     private TStroke stroke;
-    private CornerFinder cornerFinder;
+    private AbstractCornerFinder cornerFinder;
 
-    public CornerFinderCallable(TStroke stroke, CornerFinder finder) {
+    public CornerFinderCallable(TStroke stroke, AbstractCornerFinder finder) {
         this.stroke = stroke;
         this.cornerFinder = finder;
     }

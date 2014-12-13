@@ -14,7 +14,7 @@ import java.util.List;
  * 
  * @author Aaron Wolin
  */
-public class AngleCornerFinder extends CornerFinder
+public class AngleCornerFinder extends AbstractCornerFinder
 {
 	private final boolean DEBUG = false;
 	

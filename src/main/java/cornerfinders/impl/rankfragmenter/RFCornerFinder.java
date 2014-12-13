@@ -3,7 +3,7 @@ package cornerfinders.impl.rankfragmenter;
 import com.google.common.collect.Lists;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
-import cornerfinders.impl.CornerFinder;
+import cornerfinders.impl.AbstractCornerFinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by jaideepray on 12/12/14.
  */
-public class RFCornerFinder extends CornerFinder {
+public class RFCornerFinder extends AbstractCornerFinder {
 
     private List<TPoint> pointList;
     private RFInitializer rfInitializer;

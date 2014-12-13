@@ -14,7 +14,7 @@ import java.util.Arrays;
  * 
  * @author Aaron Wolin
  */
-public class ShortStrawCornerFinder extends CornerFinder {
+public class ShortStrawCornerFinder extends AbstractCornerFinder {
 	private final boolean DEBUG = false;
 
 	private final double PERCENTAGE = 0.95;

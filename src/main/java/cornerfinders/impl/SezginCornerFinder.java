@@ -10,7 +10,7 @@ import java.io.PrintStream;
 import java.util.*;
 
 
-public class SezginCornerFinder extends CornerFinder {
+public class SezginCornerFinder extends AbstractCornerFinder {
     private final boolean DEBUG = false;
 
     private double[] direction;

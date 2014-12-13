@@ -13,7 +13,7 @@ import java.util.List;
  * 
  * @author Aaron Wolin
  */
-public class KimCornerFinder extends CornerFinder
+public class KimCornerFinder extends AbstractCornerFinder
 {
 	private final boolean DEBUG = false;
 
