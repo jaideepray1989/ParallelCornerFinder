@@ -13,9 +13,10 @@ import java.util.List;
  */
 public class CheckAccuracyCF {
 
-
     public static List<TPoint> fetchCornerPoints(TStroke s, ArrayList<Integer> indices) {
         List<TPoint> corners = Lists.newArrayList();
+        if (indices == null || indices.isEmpty())
+            return corners;
         for (Integer index : indices) {
             if (0 <= index && index <= s.getSize()) {
                 corners.add(s.getPoint(index));
@@ -25,18 +26,23 @@ public class CheckAccuracyCF {
     }
 
     public static void checkAccuracy() {
+        DBUtils dbUtils = new DBUtils();
         ShortStrawCornerFinder strawCornerFinder = new ShortStrawCornerFinder();
         SezginCornerFinder sezginCornerFinder = new SezginCornerFinder();
-        ConnectDB connectDB = new ConnectDB();
-        connectDB.startConnection();
-        List<TStroke> strokeList = DBUtils.fetchStrokes(1);
+        List<TStroke> strokeList = dbUtils.fetchStrokes(1);
         List<TPoint> strawCorners = Lists.newArrayList();
         List<TPoint> sezginCorners = Lists.newArrayList();
         for (TStroke s : strokeList) {
+            if (s.getPoints().size() < 30)
+                continue;
             ArrayList<Integer> c1 = strawCornerFinder.findCorners(s);
             ArrayList<Integer> c2 = sezginCornerFinder.findCorners(s);
-            strawCorners.addAll(fetchCornerPoints(s, c1));
-            sezginCorners.addAll(fetchCornerPoints(s, c2));
+            List<TPoint> stC = fetchCornerPoints(s, c1);
+            if (!stC.isEmpty())
+                strawCorners.addAll(stC);
+            List<TPoint> szC = fetchCornerPoints(s, c2);
+            if (!szC.isEmpty())
+                sezginCorners.addAll(szC);
         }
         System.out.println("SHORT STRAW");
         printCorners(strawCorners);

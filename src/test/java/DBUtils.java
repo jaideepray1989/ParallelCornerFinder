@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DBUtils {
 
-    public static List<TStroke> fetchStrokes(int numData) {
+    public List<TStroke> fetchStrokes(int numData) {
         ConnectDB dbConnect = new ConnectDB();
         Connection conn = dbConnect.startConnection();
         List<TStroke> newParserStrokes = Lists.newArrayList();
