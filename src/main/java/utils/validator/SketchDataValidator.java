@@ -5,7 +5,6 @@ import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by jaideepray on 12/12/14.

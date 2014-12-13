@@ -1,4 +1,3 @@
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.core.shapes.xml.parser.ShapeParser;
@@ -10,7 +9,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class DBUtils {
 
