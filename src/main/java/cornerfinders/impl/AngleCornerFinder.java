@@ -61,7 +61,7 @@ public class AngleCornerFinder extends AbstractCornerFinder
 			return corners;
 		}
 		else
-			return null;
+			return new ArrayList<>();
 		//return new ArrayList<Integer>();
 	}
 	
