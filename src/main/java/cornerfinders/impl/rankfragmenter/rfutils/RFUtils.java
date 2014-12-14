@@ -36,6 +36,8 @@ public class RFUtils {
         return euclidean(s.getMinX(), s.getMinY(), s.getMaxX(), s.getMaxY());
     }
 
+    public static Integer INF = 10000;
+
 
     public void populateInstanceWithData(List<TPoint> pointList, TStroke stroke) {
         Instances trainingDataInstance = new Instances("TRAIN", FeatureAttributes.getAttributeSet(), 1);

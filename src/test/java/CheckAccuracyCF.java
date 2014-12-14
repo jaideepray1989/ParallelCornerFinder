@@ -5,6 +5,7 @@ import cornerfinders.impl.AngleCornerFinder;
 import cornerfinders.impl.KimCornerFinder;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
+import cornerfinders.impl.rankfragmenter.RFCornerFinder;
 import cornerfinders.render.Figure;
 import utils.validator.CornerValidator;
 import utils.validator.SketchDataValidator;
@@ -35,12 +36,14 @@ public class CheckAccuracyCF {
         SezginCornerFinder sezginCornerFinder = new SezginCornerFinder();
         KimCornerFinder kimCornerFinder = new KimCornerFinder();
         AngleCornerFinder angleCornerFinder = new AngleCornerFinder();
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(100);
+        RFCornerFinder rfCornerFinder = new RFCornerFinder(10);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(1);
         Figure render = new Figure();
         List<TPoint> strawCorners = Lists.newArrayList();
         List<TPoint> sezginCorners = Lists.newArrayList();
         List<TPoint> kimCorners = Lists.newArrayList();
         List<TPoint> angleCorners = Lists.newArrayList();
+        List<TPoint> rfCorners = Lists.newArrayList();
         List<TPoint> shapePoints = Lists.newArrayList();
         int numPoints = 0;
         for (List<TStroke> sList : strokeMap.values()) {
@@ -67,6 +70,11 @@ public class CheckAccuracyCF {
                 List<TPoint> cornerAngles = fetchCornerPoints(s, c4);
                 if (!cornerAngles.isEmpty())
                     angleCorners.addAll(cornerAngles);
+
+                ArrayList<Integer> c5 = rfCornerFinder.findCorners(s);
+                List<TPoint> rfC = fetchCornerPoints(s, c5);
+                if (!rfC.isEmpty())
+                    rfCorners.addAll(rfC);
             }
 
             System.out.println("------------------------------------");
@@ -79,19 +87,20 @@ public class CheckAccuracyCF {
             printCorners(CornerValidator.validateCorners(kimCorners));
             System.out.println("SEZGIN");
             printCorners(CornerValidator.validateCorners(sezginCorners));
+            System.out.println("RFC");
+            printCorners(CornerValidator.validateCorners(rfCorners));
             System.out.println("------------------------------------");
         }
     }
 
     public static void printCorners(List<TPoint> corners) {
         System.out.println("Number of corners :: " + corners.size());
-//        for (TPoint pt : corners) {
-//            pt.printPoint();
-//        }
+        for (TPoint pt : corners) {
+            pt.printPoint();
+        }
     }
 
     public static void main(String[] args) {
         checkAccuracy();
-
     }
 }

@@ -7,13 +7,13 @@ import cornerfinders.impl.AbstractCornerFinder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by jaideepray on 12/12/14.
  */
 public class RFCornerFinder extends AbstractCornerFinder {
 
-    private List<TPoint> pointList;
     private RFInitializer rfInitializer;
     private CornerPruner cornerPruner;
     private CornerClassifier classifier;
@@ -23,17 +23,15 @@ public class RFCornerFinder extends AbstractCornerFinder {
     @Override
     public ArrayList<Integer> findCorners(TStroke stroke) {
         List<TPoint> strokePoints = stroke.getPoints();
-        List<RFNode> rfNodes = rfInitializer.getInitialList(strokePoints);
-        List<RFNode> prunedList = cornerPruner.pruneList(rfNodes);
-        List<TPoint> corners = classifier.getCornerList(prunedList);
-        return Lists.newArrayList();
+        Map<Integer, RFNode> initialList = rfInitializer.getInitialList(strokePoints);
+        Map<Integer, RFNode> prunedList = cornerPruner.pruneList(initialList,notToBePruned);
+        return Lists.newArrayList(prunedList.keySet());
     }
 
-    RFCornerFinder(List<TPoint> ptList, Integer np) {
+    public RFCornerFinder(Integer np) {
         classifier = new CornerClassifier();
         rfInitializer = new RFInitializer();
         cornerPruner = new CornerPruner();
-        pointList = ptList;
         notToBePruned = np;
     }
 
