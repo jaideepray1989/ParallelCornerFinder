@@ -47,6 +47,8 @@ public class CheckAccuracyCF {
         List<TPoint> angleCorners = Lists.newArrayList();
         List<TPoint> rfCorners = Lists.newArrayList();
         List<TPoint> shapePoints = Lists.newArrayList();
+        List<TPoint> allcorners = Lists.newArrayList();
+        List<TPoint> finalcorners = Lists.newArrayList();
         int numPoints = 0;
         for (List<TStroke> sList : strokeMap.values()) {
             List<TPoint> szC = Lists.newArrayList();
@@ -81,6 +83,11 @@ public class CheckAccuracyCF {
                 List<TPoint> rfC = fetchCornerPoints(s, c5);
                 if (!rfC.isEmpty())
                     rfCorners.addAll(rfC);
+                allcorners.addAll(stC);
+                allcorners.addAll(kimC);
+                allcorners.addAll(angleCorners);
+                allcorners.addAll(rfC);
+                finalcorners.addAll(allcorners);
             }
 
             System.out.println("------------------------------------");
@@ -95,7 +102,19 @@ public class CheckAccuracyCF {
             printCorners(CornerValidator.validateCorners(sezginCorners));
             System.out.println("RFC");
             printCorners(CornerValidator.validateCorners(rfCorners));
-            System.out.println("------------------------------------");
+//            allcorners.addAll(strawCorners);
+//            allcorners.addAll(angleCorners);
+//            allcorners.addAll(kimCorners);
+//            allcorners.addAll(sezginCorners);
+//            allcorners.addAll(rfCorners);
+//            render.renderShape(allcorners);
+//            render.renderShape(strawCorners);
+              //render.renderShape(angleCorners);
+//            render.renderShape(kimCorners);
+//            render.renderShape(sezginCorners);
+              render.renderShape(rfCorners);
+//            System.out.println("------------------------------------");
+
             //System.out.println("Total Corners:" + allCorners.size());
         }
     }
