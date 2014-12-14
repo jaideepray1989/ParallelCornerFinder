@@ -1,8 +1,14 @@
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.*;
+import cornerfinders.impl.AngleCornerFinder;
+import cornerfinders.impl.KimCornerFinder;
+import cornerfinders.impl.SezginCornerFinder;
+import cornerfinders.impl.ShortStrawCornerFinder;
+import cornerfinders.impl.combination.SBFSCombinationSegmenter;
 import cornerfinders.impl.combination.objectivefuncs.MSEObjectiveFunction;
 import cornerfinders.impl.rankfragmenter.RFCornerFinder;
 import cornerfinders.impl.combination.objectivefuncs.PolylineMSEObjectiveFunction;
@@ -60,8 +66,8 @@ public class CheckAccuracyCF {
         List<TPoint> angleCorners = Lists.newArrayList();
         List<TPoint> rfCorners = Lists.newArrayList();
         List<TPoint> shapePoints = Lists.newArrayList();
-        List<TPoint> allcorners = Lists.newArrayList();
-        List<TPoint> finalcorners = Lists.newArrayList();
+        List<TPoint> allCorners = Lists.newArrayList();
+        List<TPoint> finalCorners = Lists.newArrayList();
         Set<Integer> cornerIndicesSet = Sets.newHashSet();
         SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
         MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
@@ -104,12 +110,9 @@ public class CheckAccuracyCF {
 //                cornerIndicesSet.addAll(c5);
 //                if (!rfC.isEmpty())
 //                    rfCorners.addAll(rfC);
-                allcorners.addAll(stC);
-                allcorners.addAll(kimC);
-                allcorners.addAll(angleCorners);
                 //allcorners.addAll(rfC);
                 ArrayList<Integer> finalIndices = mergedCornerFinder.findCorners(s);
-                finalcorners.addAll(fetchCornerPoints(s, finalIndices));
+                finalCorners.addAll(fetchCornerPoints(s, finalIndices));
             }
 
             System.out.println("------------------------------------");
@@ -123,11 +126,11 @@ public class CheckAccuracyCF {
             System.out.println("SEZGIN");
             printCorners(CornerValidator.validateCorners(sezginCorners));
             System.out.println("PARALLEL");
-            printCorners(CornerValidator.validateCorners(finalcorners));
+            printCorners(CornerValidator.validateCorners(finalCorners));
 //            System.out.println("RFC");
 //            printCorners(CornerValidator.validateCorners(rfCorners));
             System.out.println();
-            render.renderShape(finalcorners);
+            render.renderShape(finalCorners);
             System.out.println("------------------------------------");
         }
     }

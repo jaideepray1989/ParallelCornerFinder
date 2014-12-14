@@ -46,33 +46,39 @@ public class MSEObjectiveFunction implements IObjectiveFunction {
 
 		for (int c = 1; c < corners.size(); c++) {
 
-			List<TPoint> actualSegment = stroke.getPoints().subList(
-					corners.get(c - 1), corners.get(c));
+			int prevIndex = corners.get(c - 1);
+			int currIndex = corners.get(c);
+			int size = stroke.getPoints().size();
+			if (prevIndex < size && currIndex < size) {
+				List<TPoint> actualSegment = stroke.getPoints().subList(
+						prevIndex, currIndex);
 
-			double err = 0.0;
+				double err = 0.0;
 
-			if (isLine(corners.get(c - 1), corners.get(c), stroke, pathLengths,
-					S_LINETHRESHOLD)) {
+				if (isLine(corners.get(c - 1), corners.get(c), stroke,
+						pathLengths, S_LINETHRESHOLD)) {
 
-				TPoint corner1 = stroke.getPoint(corners.get(c - 1));
-				TPoint corner2 = stroke.getPoint(corners.get(c));
+					TPoint corner1 = stroke.getPoint(corners.get(c - 1));
+					TPoint corner2 = stroke.getPoint(corners.get(c));
 
-				Line2D.Double optimalLine = new Line2D.Double();
-				optimalLine.setLine(corner1.getX(), corner1.getY(),
-						corner2.getX(), corner2.getY());
+					Line2D.Double optimalLine = new Line2D.Double();
+					optimalLine.setLine(corner1.getX(), corner1.getY(),
+							corner2.getX(), corner2.getY());
 
-				double lineErr = LeastSquares.error(actualSegment, optimalLine);
+					double lineErr = LeastSquares.error(actualSegment,
+							optimalLine);
 
-				err = lineErr;
-			} else {
+					err = lineErr;
+				} else {
 
-				double curveErr = curveFitError(actualSegment, 4);
-				double arcErr = arcOrthogonalDistanceSquared(actualSegment);
+					double curveErr = curveFitError(actualSegment, 4);
+					double arcErr = arcOrthogonalDistanceSquared(actualSegment);
 
-				err = Math.min(curveErr, arcErr);
+					err = Math.min(curveErr, arcErr);
+				}
+
+				totalError += err;
 			}
-
-			totalError += err;
 		}
 
 		return totalError;
