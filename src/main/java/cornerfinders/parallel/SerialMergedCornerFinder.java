@@ -30,30 +30,22 @@ public class SerialMergedCornerFinder extends AbstractCornerFinder {
         sezginCornerFinder = new SezginCornerFinder();
         kimCornerFinder = new KimCornerFinder();
         angleCornerFinder = new AngleCornerFinder();
-
-        // has to be injected
-
     }
 
     @Override
     public ArrayList<Integer> findCorners(TStroke stroke) {
         ArrayList<Integer> allCorners = Lists.newArrayList();
-
         ArrayList<Integer> c1 = shortStrawCornerFinder.findCorners(stroke);
         combinedCorners.addAll(c1);
-
         ArrayList<Integer> c2 = sezginCornerFinder.findCorners(stroke);
         combinedCorners.addAll(c2);
-
         ArrayList<Integer> c3 = kimCornerFinder.findCorners(stroke);
         combinedCorners.addAll(c3);
-
         ArrayList<Integer> c4 = angleCornerFinder.findCorners(stroke);
         combinedCorners.addAll(c4);
-
         allCorners.addAll(combinedCorners);
-
-        return combine(allCorners, stroke);
+        ArrayList<Integer> combine = combine(allCorners, stroke);
+        return combine;
     }
 
     public ArrayList<Integer> combine(ArrayList<Integer> allCorners, TStroke s) {
@@ -61,7 +53,6 @@ public class SerialMergedCornerFinder extends AbstractCornerFinder {
         MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
         return (ArrayList) segmenter.sbfs(Lists.newArrayList(allCorners), s, objectiveFunction);
     }
-
 
 
 }
