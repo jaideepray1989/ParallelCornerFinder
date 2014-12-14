@@ -7,7 +7,7 @@ public class FeatureAttributes {
 
 
     public enum FeatureSet {
-        PointAngle, PointCurvature, PointPosition, PointSpeed, PointStraw, RankCostFeature, RankFeature, DiagonalLengthFeature, LengthFeature;
+        ClassAttribute, PointAngle, PointCurvature, PointPosition, PointSpeed, PointStraw, RankCostFeature, RankFeature, DiagonalLengthFeature, LengthFeature;
     }
 
     public enum ClassSet {
@@ -31,9 +31,9 @@ public class FeatureAttributes {
 
     public static Attribute getClassAttribute() {
         FastVector fvNominalVal = new FastVector(2);
-        fvNominalVal.addElement(ClassSet.Corner);
-        fvNominalVal.addElement(ClassSet.NotACorner);
-        return new Attribute("class", fvNominalVal);
+        fvNominalVal.addElement(ClassSet.Corner.toString());
+        fvNominalVal.addElement(ClassSet.NotACorner.toString());
+        return new Attribute(FeatureSet.ClassAttribute.toString(), fvNominalVal);
     }
 
 

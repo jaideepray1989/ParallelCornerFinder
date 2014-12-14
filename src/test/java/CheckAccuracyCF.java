@@ -2,13 +2,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
-import cornerfinders.impl.AngleCornerFinder;
-import cornerfinders.impl.KimCornerFinder;
-import cornerfinders.impl.SezginCornerFinder;
-import cornerfinders.impl.ShortStrawCornerFinder;
+import cornerfinders.impl.*;
 import cornerfinders.impl.combination.objectivefuncs.MSEObjectiveFunction;
 import cornerfinders.impl.rankfragmenter.RFCornerFinder;
 import cornerfinders.impl.combination.objectivefuncs.PolylineMSEObjectiveFunction;
+import cornerfinders.parallel.ParallelMergedCornerFinder;
 import cornerfinders.render.Figure;
 import utils.validator.CornerValidator;
 import utils.validator.SketchDataValidator;
@@ -37,12 +35,23 @@ public class CheckAccuracyCF {
         return corners;
     }
 
+    public static RFCornerFinder trainRFClassifier(AbstractCornerFinder cornerFinder) {
+
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(10);
+        List<TStroke> trainingSet = Lists.newArrayList();
+        for (Map.Entry<String, List<TStroke>> entry : strokeMap.entrySet()) {
+            trainingSet.addAll(entry.getValue());
+        }
+        return new RFCornerFinder(10, trainingSet, cornerFinder);
+    }
+
     public static void checkAccuracy() {
         ShortStrawCornerFinder strawCornerFinder = new ShortStrawCornerFinder();
         SezginCornerFinder sezginCornerFinder = new SezginCornerFinder();
         KimCornerFinder kimCornerFinder = new KimCornerFinder();
         AngleCornerFinder angleCornerFinder = new AngleCornerFinder();
-        RFCornerFinder rfCornerFinder = new RFCornerFinder(10);
+        // RFCornerFinder rfCornerFinder = trainRFClassifier(strawCornerFinder);
+        ParallelMergedCornerFinder mergedCornerFinder = new ParallelMergedCornerFinder();
         Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(1);
         Figure render = new Figure();
         List<TPoint> strawCorners = Lists.newArrayList();
@@ -90,16 +99,16 @@ public class CheckAccuracyCF {
                 if (!cornerAngles.isEmpty())
                     angleCorners.addAll(cornerAngles);
 
-                ArrayList<Integer> c5 = rfCornerFinder.findCorners(s);
-                List<TPoint> rfC = fetchCornerPoints(s, c5);
-                cornerIndicesSet.addAll(c5);
-                if (!rfC.isEmpty())
-                    rfCorners.addAll(rfC);
+//                ArrayList<Integer> c5 = rfCornerFinder.findCorners(s);
+//                List<TPoint> rfC = fetchCornerPoints(s, c5);
+//                cornerIndicesSet.addAll(c5);
+//                if (!rfC.isEmpty())
+//                    rfCorners.addAll(rfC);
                 allcorners.addAll(stC);
                 allcorners.addAll(kimC);
                 allcorners.addAll(angleCorners);
-                allcorners.addAll(rfC);
-                ArrayList<Integer> finalIndices = (ArrayList) segmenter.sbfs(Lists.newArrayList(cornerIndicesSet), s, objectiveFunction);
+                //allcorners.addAll(rfC);
+                ArrayList<Integer> finalIndices = mergedCornerFinder.findCorners(s);
                 finalcorners.addAll(fetchCornerPoints(s, finalIndices));
             }
 
@@ -113,9 +122,12 @@ public class CheckAccuracyCF {
             printCorners(CornerValidator.validateCorners(kimCorners));
             System.out.println("SEZGIN");
             printCorners(CornerValidator.validateCorners(sezginCorners));
-            System.out.println("RFC");
-            printCorners(CornerValidator.validateCorners(rfCorners));
-            render.renderShape(rfCorners);
+            System.out.println("PARALLEL");
+            printCorners(CornerValidator.validateCorners(finalcorners));
+//            System.out.println("RFC");
+//            printCorners(CornerValidator.validateCorners(rfCorners));
+            System.out.println();
+            render.renderShape(finalcorners);
             System.out.println("------------------------------------");
         }
     }

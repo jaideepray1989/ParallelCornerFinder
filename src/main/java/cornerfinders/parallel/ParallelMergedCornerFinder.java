@@ -8,28 +8,27 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
-import cornerfinders.impl.AngleCornerFinder;
-import cornerfinders.impl.KimCornerFinder;
-import cornerfinders.impl.SezginCornerFinder;
-import cornerfinders.impl.ShortStrawCornerFinder;
+import cornerfinders.impl.*;
+import cornerfinders.impl.combination.SBFSCombinationSegmenter;
+import cornerfinders.impl.combination.objectivefuncs.MSEObjectiveFunction;
 import cornerfinders.parallel.callable.CornerFinderCallable;
 import utils.TaskRunner;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class ParallelMergedCornerFinder {
-    private TStroke stroke;
+public class ParallelMergedCornerFinder extends AbstractCornerFinder {
     private ShortStrawCornerFinder shortStrawCornerFinder;
     private SezginCornerFinder sezginCornerFinder;
     private KimCornerFinder kimCornerFinder;
     private AngleCornerFinder angleCornerFinder;
     private TaskRunner<ArrayList<Integer>> taskRunner;
 
-    public ParallelMergedCornerFinder(TStroke s) {
-        stroke = s;
+    public ParallelMergedCornerFinder() {
         shortStrawCornerFinder = new ShortStrawCornerFinder();
         sezginCornerFinder = new SezginCornerFinder();
         kimCornerFinder = new KimCornerFinder();
@@ -38,9 +37,11 @@ public class ParallelMergedCornerFinder {
         taskRunner = new TaskRunner<ArrayList<Integer>>(10);
     }
 
-    public ArrayList<Integer> findCorners() {
+
+    @Override
+    public ArrayList<Integer> findCorners(TStroke stroke) {
         Map<CornerFinderName, ListenableFuture<ArrayList<Integer>>> futuresMap = Maps.newHashMap();
-        CornerFinderCallable shortStrawCallable = new CornerFinderCallable(this.stroke, shortStrawCornerFinder);
+        CornerFinderCallable shortStrawCallable = new CornerFinderCallable(stroke, shortStrawCornerFinder);
         CornerFinderCallable sezginCallable = new CornerFinderCallable(stroke, sezginCornerFinder);
         CornerFinderCallable kimCallable = new CornerFinderCallable(stroke, kimCornerFinder);
         CornerFinderCallable angleCornerCallable = new CornerFinderCallable(stroke, angleCornerFinder);
@@ -52,18 +53,18 @@ public class ParallelMergedCornerFinder {
         futuresMap.put(CornerFinderName.STRAW, shortStrawFuture);
         futuresMap.put(CornerFinderName.KIM, kimFuture);
         futuresMap.put(CornerFinderName.ANGLE, angleFuture);
-        Set<TPoint> corners = combine(futuresMap);
-        return Lists.newArrayList();
+        return combine(futuresMap,stroke);
     }
 
-    public Set<TPoint> combine(Map<CornerFinderName, ListenableFuture<ArrayList<Integer>>> map) {
-        final Set<TPoint> cornerList = Sets.newHashSet(); // it has all the corners
+    public ArrayList<Integer> combine(Map<CornerFinderName, ListenableFuture<ArrayList<Integer>>> map, TStroke stroke) {
+        final Set<Integer> cornerIndicesList = Sets.newHashSet(); // it has all the corners
+        SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
+        MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
         for (Map.Entry<CornerFinderName, ListenableFuture<ArrayList<Integer>>> entry : map.entrySet()) {
             Futures.addCallback(entry.getValue(), new FutureCallback<ArrayList<Integer>>() {
                 @Override
                 public void onSuccess(@Nullable ArrayList<Integer> integers) {
-                    for (Integer p : integers)
-                        cornerList.add(stroke.getPoint(p));
+                    cornerIndicesList.addAll(integers);
                 }
 
                 @Override
@@ -72,12 +73,7 @@ public class ParallelMergedCornerFinder {
                 }
             });
         }
-        return cornerList;
+        return (ArrayList) segmenter.sbfs(Lists.newArrayList(cornerIndicesList), stroke, objectiveFunction);
     }
-
-    public ArrayList<TPoint> processCorners(Set<TPoint> set) {
-        return Lists.newArrayList(set);
-    }
-
 
 }
