@@ -13,8 +13,8 @@ import java.util.concurrent.Executors;
 public class TaskRunner<T> {
     private ListeningExecutorService pool;
 
-    public TaskRunner(int threadPoolSize) {
-        pool = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(threadPoolSize));
+    public TaskRunner() {
+        pool = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool());
     }
 
     public ListenableFuture<T> runTask(ITask<T> task) {

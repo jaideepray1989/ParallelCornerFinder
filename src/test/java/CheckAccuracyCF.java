@@ -59,7 +59,7 @@ public class CheckAccuracyCF {
         // RFCornerFinder rfCornerFinder = trainRFClassifier(strawCornerFinder);
         ParallelMergedCornerFinder mergedCornerFinder = new ParallelMergedCornerFinder();
         Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(1);
-        Figure render = new Figure();
+        // Figure render = new Figure();
         List<TPoint> strawCorners = Lists.newArrayList();
         List<TPoint> sezginCorners = Lists.newArrayList();
         List<TPoint> kimCorners = Lists.newArrayList();
@@ -72,10 +72,11 @@ public class CheckAccuracyCF {
         SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
         MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
         int numPoints = 0;
+
         for (List<TStroke> sList : strokeMap.values()) {
             List<TPoint> szC = Lists.newArrayList();
             szC = null;
-            render.renderFigure(sList, szC);
+            //render.renderFigure(sList, szC);
             for (TStroke s : sList) {
 
                 numPoints += s.getPoints().size();
@@ -110,13 +111,13 @@ public class CheckAccuracyCF {
 //                cornerIndicesSet.addAll(c5);
 //                if (!rfC.isEmpty())
 //                    rfCorners.addAll(rfC);
-                //allcorners.addAll(rfC);
+//                allcorners.addAll(rfC);
                 ArrayList<Integer> finalIndices = mergedCornerFinder.findCorners(s);
                 finalCorners.addAll(fetchCornerPoints(s, finalIndices));
             }
 
             System.out.println("------------------------------------");
-            System.out.println(numPoints);
+//            System.out.println(numPoints);
             System.out.println("SHORT STRAW");
             printCorners(CornerValidator.validateCorners(strawCorners));
             System.out.println("ANGLE STRAW");
@@ -130,7 +131,7 @@ public class CheckAccuracyCF {
 //            System.out.println("RFC");
 //            printCorners(CornerValidator.validateCorners(rfCorners));
             System.out.println();
-            render.renderShape(finalCorners);
+            //render.renderShape(finalCorners);
             System.out.println("------------------------------------");
         }
     }

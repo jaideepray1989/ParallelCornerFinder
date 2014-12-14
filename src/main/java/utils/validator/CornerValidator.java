@@ -1,7 +1,9 @@
 package utils.validator;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import cornerfinders.core.shapes.TPoint;
+import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.AbstractCornerFinder;
 import cornerfinders.impl.rankfragmenter.rfutils.RFUtils;
 
@@ -30,13 +32,18 @@ public class CornerValidator {
             }
         }
 
-        return filter(corners);
+        return corners;
     }
 
 
-    public static List<TPoint> filter(List<TPoint> corners) {
-        Map<TPoint, Double> arcLengthMap = arcLengthMap(corners);
-        return corners;
+    public static List<Integer> filter(List<Integer> cornerIndices, TStroke s) {
+        List<Integer> cIndices = Lists.newArrayList();
+        for (Integer cIndex : cornerIndices) {
+            if (cIndex > s.getPoints().size()) {
+                cIndices.add(cIndex);
+            }
+        }
+        return cIndices;
     }
 
     protected AbstractCornerFinder.SegType getSegmentType(TPoint p1, TPoint p2, double threshold, Map<TPoint, Double> arcLengthMap) {

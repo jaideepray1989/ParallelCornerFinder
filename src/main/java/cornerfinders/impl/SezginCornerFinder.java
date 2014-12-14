@@ -177,7 +177,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @return The direction at the index point
      */
     public double direction(List<TPoint> pts, int index) {
-        if (index - 1 >= 0) {
+        if (index >= 1 && index < pts.size()) {
             double dy = pts.get(index).getY() - pts.get(index - 1).getY();
             double dx = pts.get(index).getX() - pts.get(index - 1).getX();
 
@@ -1019,7 +1019,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
     public double getAvgSpeed() {
         return this.avgSpeed;
     }
-	
+
 	
 	
 	
