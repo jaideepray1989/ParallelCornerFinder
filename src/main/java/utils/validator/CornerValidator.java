@@ -35,6 +35,24 @@ public class CornerValidator {
         return corners;
     }
 
+    public static List<TPoint> validateCornersWithThreshold(List<TPoint> corners, int distanceThreshold) {
+
+        Collections.sort(corners, new Comparator<TPoint>() {
+            @Override
+            public int compare(TPoint o1, TPoint o2) {
+                return (o1.getX() < o2.getX()) ? -1 : 1;
+            }
+        });
+
+        for (int i = 0; i < corners.size() - 1; i++) {
+            if (RFUtils.euclidean(corners.get(i), corners.get(i + 1)) < distanceThreshold) {
+                corners.remove(i + 1);
+            }
+        }
+
+        return corners;
+    }
+
 
     public static List<Integer> filter(List<Integer> cornerIndices, TStroke s) {
         List<Integer> cIndices = Lists.newArrayList();

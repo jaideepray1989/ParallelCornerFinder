@@ -88,7 +88,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @param smooth    Should an average filter be applied?
      * @return Speed values at each point
      */
-    public double[] calcSpeed(List<TPoint> pts, double[] arcLength, boolean smooth) {
+    public synchronized double[] calcSpeed(List<TPoint> pts, double[] arcLength, boolean smooth) {
         int numPts = pts.size();
 
         double[] d = arcLength;
@@ -865,7 +865,10 @@ public class SezginCornerFinder extends AbstractCornerFinder {
      * @param p2  End point two of the line (corner 2)
      * @return The ODSQ value for the segment
      */
-    public double arcOrthogonalDistanceSquared(List<TPoint> pts, int p1, int p2) {
+    public synchronized double arcOrthogonalDistanceSquared(List<TPoint> pts, int p1, int p2) {
+        if (Math.max(p1, p2) >= pts.size()) {
+            return 0.0;
+        }
         double error = 0.0;
 
         // Set the line between the corners
@@ -1024,7 +1027,7 @@ public class SezginCornerFinder extends AbstractCornerFinder {
 	
 	
 	/*
-	 * Output information to create graphs in Excel
+     * Output information to create graphs in Excel
 	 */
 
     /**

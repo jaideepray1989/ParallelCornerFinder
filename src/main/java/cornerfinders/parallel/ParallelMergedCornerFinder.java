@@ -35,20 +35,24 @@ public class ParallelMergedCornerFinder extends AbstractCornerFinder {
 
     @Override
     public ArrayList<Integer> findCorners(TStroke stroke) {
+        long timeStart = System.currentTimeMillis();
         List<ListenableFuture<ArrayList<Integer>>> futures = Lists.newArrayList();
-        CornerFinderCallable shortStrawCallable = new CornerFinderCallable(stroke, shortStrawCornerFinder);
-        CornerFinderCallable sezginCallable = new CornerFinderCallable(stroke, sezginCornerFinder);
-        CornerFinderCallable kimCallable = new CornerFinderCallable(stroke, kimCornerFinder);
-        CornerFinderCallable angleCornerCallable = new CornerFinderCallable(stroke, angleCornerFinder);
+        CornerFinderCallable shortStrawCallable = new CornerFinderCallable(stroke.getCloned(), shortStrawCornerFinder);
+        CornerFinderCallable sezginCallable = new CornerFinderCallable(stroke.getCloned(), sezginCornerFinder);
+        CornerFinderCallable kimCallable = new CornerFinderCallable(stroke.getCloned(), kimCornerFinder);
+        CornerFinderCallable angleCornerCallable = new CornerFinderCallable(stroke.getCloned(), angleCornerFinder);
         ListenableFuture<ArrayList<Integer>> shortStrawFuture = taskRunner.runTask(shortStrawCallable);
         ListenableFuture<ArrayList<Integer>> sezginFuture = taskRunner.runTask(sezginCallable);
         ListenableFuture<ArrayList<Integer>> kimFuture = taskRunner.runTask(kimCallable);
         ListenableFuture<ArrayList<Integer>> angleFuture = taskRunner.runTask(angleCornerCallable);
         futures.add(shortStrawFuture);
-//        futures.add(sezginFuture);
+        futures.add(sezginFuture);
         futures.add(kimFuture);
         futures.add(angleFuture);
-        return mergeCornerFinder(futures, stroke);
+        ArrayList<Integer> finalIndices = mergeCornerFinder(futures, stroke);
+        long timeEnd = System.currentTimeMillis();
+        System.out.println(timeEnd - timeStart);
+        return finalIndices;
     }
 
     public ArrayList<Integer> mergeCornerFinder(List<ListenableFuture<ArrayList<Integer>>> futures, final TStroke stroke) {
