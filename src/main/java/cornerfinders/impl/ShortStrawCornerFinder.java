@@ -35,7 +35,7 @@ public class ShortStrawCornerFinder extends AbstractCornerFinder {
 		this.pts = resamplePoints2(stroke, resampleSpacing);
 		this.stroke = new TStroke(pts);
 		arcLength = arcLength();
-		ArrayList<Integer> corners = new ArrayList<>();
+		ArrayList<Integer> corners = new ArrayList<Integer>();
 		if (pts.size() > (window * 2)) {
 			corners = getCornersFromResampleLength(pts, window);
 		}
