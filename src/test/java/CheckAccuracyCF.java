@@ -1,24 +1,24 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import utils.validator.CornerValidator;
+import utils.validator.SketchDataValidator;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.AngleCornerFinder;
 import cornerfinders.impl.KimCornerFinder;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
+import cornerfinders.impl.combination.SBFSCombinationSegmenter;
 import cornerfinders.impl.combination.objectivefuncs.MSEObjectiveFunction;
 import cornerfinders.impl.rankfragmenter.RFCornerFinder;
-import cornerfinders.impl.combination.objectivefuncs.PolylineMSEObjectiveFunction;
 import cornerfinders.render.Figure;
-import utils.validator.CornerValidator;
-import utils.validator.SketchDataValidator;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import cornerfinders.impl.combination.*;
 
 /**
  * Created by jaideepray on 12/12/14.
@@ -51,8 +51,8 @@ public class CheckAccuracyCF {
         List<TPoint> angleCorners = Lists.newArrayList();
         List<TPoint> rfCorners = Lists.newArrayList();
         List<TPoint> shapePoints = Lists.newArrayList();
-        List<TPoint> allcorners = Lists.newArrayList();
-        List<TPoint> finalcorners = Lists.newArrayList();
+        List<TPoint> allCorners = Lists.newArrayList();
+        List<TPoint> finalCorners = Lists.newArrayList();
         Set<Integer> cornerIndicesSet = Sets.newHashSet();
         SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
         MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
@@ -60,7 +60,7 @@ public class CheckAccuracyCF {
         for (List<TStroke> sList : strokeMap.values()) {
             List<TPoint> szC = Lists.newArrayList();
             szC = null;
-            render.renderFigure(sList, szC);
+            //render.renderFigure(sList, szC);
             for (TStroke s : sList) {
 
                 numPoints += s.getPoints().size();
@@ -95,12 +95,12 @@ public class CheckAccuracyCF {
                 cornerIndicesSet.addAll(c5);
                 if (!rfC.isEmpty())
                     rfCorners.addAll(rfC);
-                allcorners.addAll(stC);
-                allcorners.addAll(kimC);
-                allcorners.addAll(angleCorners);
-                allcorners.addAll(rfC);
-                ArrayList<Integer> finalIndices = (ArrayList) segmenter.sbfs(Lists.newArrayList(cornerIndicesSet), s, objectiveFunction);
-                finalcorners.addAll(fetchCornerPoints(s, finalIndices));
+                allCorners.addAll(stC);
+                allCorners.addAll(kimC);
+                allCorners.addAll(angleCorners);
+                allCorners.addAll(rfC);
+                ArrayList<Integer> finalIndices = (ArrayList<Integer>) segmenter.sbfs(Lists.newArrayList(cornerIndicesSet), s, objectiveFunction);
+                finalCorners.addAll(fetchCornerPoints(s, finalIndices));
             }
 
             System.out.println("------------------------------------");
@@ -115,7 +115,7 @@ public class CheckAccuracyCF {
             printCorners(CornerValidator.validateCorners(sezginCorners));
             System.out.println("RFC");
             printCorners(CornerValidator.validateCorners(rfCorners));
-            render.renderShape(rfCorners);
+            render.renderShape(finalCorners);
             System.out.println("------------------------------------");
         }
     }
