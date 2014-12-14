@@ -131,7 +131,7 @@ public abstract class AbstractCornerFinder
 	 */
 	protected SegType getSegmentType(int p1, int p2, double threshold)
 	{
-        if (Math.max(p1, p2) >= arcLength.length || Math.max(p1, p2) < pts.size())
+        if (Math.max(p1, p2) >= arcLength.length || Math.max(p1, p2) >= pts.size())
             return SegType.Arc;
 		double sizeThreshold = 4;
 

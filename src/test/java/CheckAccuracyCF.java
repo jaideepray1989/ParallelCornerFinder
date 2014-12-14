@@ -59,15 +59,15 @@ public class CheckAccuracyCF {
         // RFCornerFinder rfCornerFinder = trainRFClassifier(strawCornerFinder);
         ParallelMergedCornerFinder mergedCornerFinder = new ParallelMergedCornerFinder();
         Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(1);
-        // Figure render = new Figure();
-        List<TPoint> strawCorners = Lists.newArrayList();
-        List<TPoint> sezginCorners = Lists.newArrayList();
-        List<TPoint> kimCorners = Lists.newArrayList();
-        List<TPoint> angleCorners = Lists.newArrayList();
-        List<TPoint> rfCorners = Lists.newArrayList();
-        List<TPoint> shapePoints = Lists.newArrayList();
-        List<TPoint> allCorners = Lists.newArrayList();
-        List<TPoint> finalCorners = Lists.newArrayList();
+        Figure render = new Figure();
+        List<TPoint> strawCorners = Lists.newArrayListWithCapacity(30);
+        List<TPoint> sezginCorners = Lists.newArrayListWithCapacity(30);
+        List<TPoint> kimCorners = Lists.newArrayListWithCapacity(30);
+        List<TPoint> angleCorners = Lists.newArrayListWithCapacity(30);
+        List<TPoint> rfCorners = Lists.newArrayListWithCapacity(30);
+        List<TPoint> shapePoints = Lists.newArrayListWithCapacity(30);
+        List<TPoint> allCorners = Lists.newArrayListWithCapacity(300);
+        List<TPoint> finalCorners = Lists.newArrayListWithCapacity(300);
         Set<Integer> cornerIndicesSet = Sets.newHashSet();
         SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
         MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
@@ -76,7 +76,7 @@ public class CheckAccuracyCF {
         for (List<TStroke> sList : strokeMap.values()) {
             List<TPoint> szC = Lists.newArrayList();
             szC = null;
-            //render.renderFigure(sList, szC);
+            render.renderFigure(sList, szC);
             for (TStroke s : sList) {
 
                 numPoints += s.getPoints().size();
@@ -127,11 +127,11 @@ public class CheckAccuracyCF {
             System.out.println("SEZGIN");
             printCorners(CornerValidator.validateCorners(sezginCorners));
             System.out.println("PARALLEL");
-            printCorners(CornerValidator.validateCorners(finalCorners));
+            printCorners(finalCorners);
 //            System.out.println("RFC");
 //            printCorners(CornerValidator.validateCorners(rfCorners));
             System.out.println();
-            //render.renderShape(finalCorners);
+            render.renderShape(finalCorners);
             System.out.println("------------------------------------");
         }
     }

@@ -45,7 +45,7 @@ public class ParallelMergedCornerFinder extends AbstractCornerFinder {
         ListenableFuture<ArrayList<Integer>> kimFuture = taskRunner.runTask(kimCallable);
         ListenableFuture<ArrayList<Integer>> angleFuture = taskRunner.runTask(angleCornerCallable);
         futures.add(shortStrawFuture);
-        futures.add(sezginFuture);
+//        futures.add(sezginFuture);
         futures.add(kimFuture);
         futures.add(angleFuture);
         return mergeCornerFinder(futures, stroke);
