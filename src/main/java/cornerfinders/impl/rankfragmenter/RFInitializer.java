@@ -11,11 +11,14 @@ import java.util.Map;
 
 public class RFInitializer {
 
-    public Map<Integer, RFNode> getInitialList(List<TPoint> pointList) {
+    public Map<Integer, RFNode> getInitialList(List<TPoint> pointList, boolean prune) {
         Map<Integer, RFNode> map = Maps.newHashMap();
         for (int i = 0; i < pointList.size(); i++) {
             RFNode node = new RFNode(i, pointList.get(i), 0);
             map.put(i, node);
+        }
+        if (!prune) {
+            return map;
         }
         map.get(0).cost = RFUtils.INF;
         List<Integer> toDelete = Lists.newArrayList();
@@ -35,8 +38,7 @@ public class RFInitializer {
             }
         }
 
-        for(Integer i:toDelete)
-        {
+        for (Integer i : toDelete) {
             map.remove(i);
         }
         return map;

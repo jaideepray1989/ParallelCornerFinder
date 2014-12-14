@@ -4,13 +4,12 @@ import cornerfinders.impl.rankfragmenter.RFNode;
 import cornerfinders.impl.rankfragmenter.rfutils.RFUtils;
 
 /**
- * Created by jaideepray on 12/12/14.
+ * Created by jaideepray on 12/14/14.
  */
-public class StrawFeature {
-
+public class AngleWithWindowFeature {
     public static Integer strawWindow = 3;
 
-    public static double calculateStraw(RFNode node) {
+    public static double getAngle(RFNode node) {
         RFNode currMinusWindow = null;
         RFNode currPlusWindow = null;
         for (int i = 0; i < strawWindow; i++) {
@@ -23,7 +22,7 @@ public class StrawFeature {
         }
 
         if (currMinusWindow != null && currPlusWindow != null) {
-            return RFUtils.euclidean(currMinusWindow.corner, currPlusWindow.corner);
+            return AngleFeature.computeAngle(currMinusWindow.corner, node.corner, currPlusWindow.corner);
         }
         return 0.0;
     }

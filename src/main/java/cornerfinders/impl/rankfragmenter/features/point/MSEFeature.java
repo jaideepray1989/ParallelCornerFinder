@@ -1,24 +1,30 @@
-package cornerfinders.impl.rankfragmenter.features.rank;
+package cornerfinders.impl.rankfragmenter.features.point;
 
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.impl.rankfragmenter.RFNode;
 import cornerfinders.impl.rankfragmenter.rfutils.RFCost;
 import cornerfinders.impl.rankfragmenter.rfutils.RFUtils;
+import sun.awt.RequestFocusController;
 
 /**
- * Created by jaideepray on 12/12/14.
+ * Created by jaideepray on 12/14/14.
  */
-public class RankFeature {
+public class MSEFeature {
 
-    public static double getRank(RFNode node) {
+    public static double getMSEFeature(RFNode node) {
+
         RFNode prevNode = node.previous;
         RFNode next = node.next;
+
+        double mse = 0.0;
         if (prevNode != null && next != null) {
             TPoint prevPoint = prevNode.corner;
             TPoint nextPoint = next.corner;
             TPoint point = node.corner;
-            return Math.min(RFUtils.euclidean(point,prevPoint),RFUtils.euclidean(point,nextPoint));
+            return RFCost.cost(prevPoint, nextPoint, point);
         }
-        return 0.0;
+        return mse;
     }
+
+
 }

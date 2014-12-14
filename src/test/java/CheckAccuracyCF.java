@@ -44,12 +44,12 @@ public class CheckAccuracyCF {
 
     public static RFCornerFinder trainRFClassifier(AbstractCornerFinder cornerFinder) {
 
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(10);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(40);
         List<TStroke> trainingSet = Lists.newArrayList();
         for (Map.Entry<String, List<TStroke>> entry : strokeMap.entrySet()) {
             trainingSet.addAll(entry.getValue());
         }
-        return new RFCornerFinder(10, trainingSet, cornerFinder);
+        return new RFCornerFinder(30, trainingSet, cornerFinder);
     }
 
     public static void checkAccuracy() {
@@ -57,10 +57,11 @@ public class CheckAccuracyCF {
         SezginCornerFinder sezginCornerFinder = new SezginCornerFinder();
         KimCornerFinder kimCornerFinder = new KimCornerFinder();
         AngleCornerFinder angleCornerFinder = new AngleCornerFinder();
-        // RFCornerFinder rfCornerFinder = trainRFClassifier(strawCornerFinder);
+        RFCornerFinder rfCornerFinder = trainRFClassifier(strawCornerFinder);
+
         ParallelMergedCornerFinder mergedCornerFinder = new ParallelMergedCornerFinder();
         SerialMergedCornerFinder serialMergedCornerFinder = new SerialMergedCornerFinder();
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(100);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(1);
         List<TPoint> strawCorners = Lists.newArrayList();
         List<TPoint> sezginCorners = Lists.newArrayList();
         List<TPoint> kimCorners = Lists.newArrayList();
@@ -83,11 +84,11 @@ public class CheckAccuracyCF {
                 numPoints += s.getPoints().size();
                 if (!SketchDataValidator.isValidStroke(s)) continue;
                 shapePoints.addAll(s.getPoints());
-//                ArrayList<Integer> c1 = strawCornerFinder.findCorners(s);
-//                cornerIndicesSet.addAll(c1);
-//                List<TPoint> stC = fetchCornerPoints(s, c1);
-//                if (!stC.isEmpty())
-//                    strawCorners.addAll(stC);
+                ArrayList<Integer> c1 = strawCornerFinder.findCorners(s);
+                cornerIndicesSet.addAll(c1);
+                List<TPoint> stC = fetchCornerPoints(s, c1);
+                if (!stC.isEmpty())
+                    strawCorners.addAll(stC);
 //
 //                ArrayList<Integer> c2 = sezginCornerFinder.findCorners(s);
 //                cornerIndicesSet.addAll(c2);
@@ -107,23 +108,23 @@ public class CheckAccuracyCF {
 //                if (!cornerAngles.isEmpty())
 //                    angleCorners.addAll(cornerAngles);
 
-//                ArrayList<Integer> c5 = rfCornerFinder.findCorners(s);
-//                List<TPoint> rfC = fetchCornerPoints(s, c5);
-//                cornerIndicesSet.addAll(c5);
-//                if (!rfC.isEmpty())
-//                    rfCorners.addAll(rfC);
+                ArrayList<Integer> c5 = rfCornerFinder.findCorners(s);
+                List<TPoint> rfC = fetchCornerPoints(s, c5);
+                cornerIndicesSet.addAll(c5);
+                if (!rfC.isEmpty())
+                    rfCorners.addAll(rfC);
 //                allcorners.addAll(rfC);
-                long ts1 = System.currentTimeMillis();
-                ArrayList<Integer> serialFinalIndices = serialMergedCornerFinder.findCorners(s);
-                long ts2 = System.currentTimeMillis();
-                ArrayList<Integer> finalIndices = mergedCornerFinder.findCorners(s);
-                long ts3 = System.currentTimeMillis();
-                finalCorners.addAll(CornerValidator.validateCornersWithThreshold(fetchCornerPoints(s, finalIndices), 25));
-                serialTime += (ts2 - ts1);
-                parallelTime += (ts3 - ts2);
+//                long ts1 = System.currentTimeMillis();
+//                ArrayList<Integer> serialFinalIndices = serialMergedCornerFinder.findCorners(s);
+//                long ts2 = System.currentTimeMillis();
+//                ArrayList<Integer> finalIndices = mergedCornerFinder.findCorners(s);
+//                long ts3 = System.currentTimeMillis();
+//                finalCorners.addAll(CornerValidator.validateCornersWithThreshold(fetchCornerPoints(s, finalIndices), 25));
+//                serialTime += (ts2 - ts1);
+//                parallelTime += (ts3 - ts2);
             }
-            System.out.println("serial time :: " + serialTime);
-            System.out.println("parallel time :: " + parallelTime);
+//            System.out.println("serial time :: " + serialTime);
+//            System.out.println("parallel time :: " + parallelTime);
 
             System.out.println("------------------------------------");
 //            System.out.println(numPoints);
@@ -136,7 +137,12 @@ public class CheckAccuracyCF {
 //            System.out.println("SEZGIN");
 //            printCorners(CornerValidator.validateCorners(sezginCorners));
             // System.out.println("PARALLEL");
-            printCorners(finalCorners);
+            Figure figure1 = new Figure();
+            figure1.renderShape(strawCorners);
+            Figure figure2 = new Figure();
+            figure2.renderShape(rfCorners);
+            printCorners(strawCorners);
+            printCorners(rfCorners);
 //            System.out.println("RFC");
 //            printCorners(CornerValidator.validateCorners(rfCorners));
             System.out.println();
@@ -146,9 +152,9 @@ public class CheckAccuracyCF {
 
     public static void printCorners(List<TPoint> corners) {
         System.out.println("Number of corners :: " + corners.size());
-//        for (TPoint pt : corners) {
-//            pt.printPoint();
-//        }
+        for (TPoint pt : corners) {
+            pt.printPoint();
+        }
     }
 
     public static void main(String[] args) {

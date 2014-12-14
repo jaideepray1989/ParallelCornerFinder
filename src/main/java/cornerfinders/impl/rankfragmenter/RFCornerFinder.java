@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import cornerfinders.core.shapes.TPoint;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.AbstractCornerFinder;
-import weka.core.Instance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,15 +23,17 @@ public class RFCornerFinder extends AbstractCornerFinder {
     @Override
     public ArrayList<Integer> findCorners(TStroke stroke) {
         List<TPoint> strokePoints = stroke.getPoints();
-        Map<Integer, RFNode> initialList = rfInitializer.getInitialList(strokePoints);
+        List<Integer> deleteList = Lists.newArrayList();
+        Map<Integer, RFNode> initialList = rfInitializer.getInitialList(strokePoints, true);
         Map<Integer, RFNode> prunedList = cornerPruner.pruneList(initialList, notToBePruned);
         for (Map.Entry<Integer, RFNode> entry : prunedList.entrySet()) {
             RFNode value = entry.getValue();
-
-            if(!classifier.isPointACorner(value.corner))
-            {
-                prunedList.remove(entry.getKey());
+            if (!classifier.isPointACorner(stroke, value)) {
+                deleteList.add(entry.getKey());
             }
+        }
+        for (Integer e : deleteList) {
+            prunedList.remove(e);
         }
         return Lists.newArrayList(prunedList.keySet());
     }

@@ -7,7 +7,7 @@ public class FeatureAttributes {
 
 
     public enum FeatureSet {
-        ClassAttribute, PointAngle, PointCurvature, PointPosition, PointSpeed, PointStraw, RankCostFeature, RankFeature, DiagonalLengthFeature, LengthFeature;
+        ClassAttribute, PointAngle, PointCurvature, PointPosition, PointSpeed, PointStraw, RankCostFeature, RankFeature, DiagonalLengthFeature, LengthFeature, MSEFeature, AngleWithWindow;
     }
 
     public enum ClassSet {
@@ -26,6 +26,8 @@ public class FeatureAttributes {
         atts.addElement(new Attribute(FeatureSet.RankFeature.toString()));
         atts.addElement(new Attribute(FeatureSet.DiagonalLengthFeature.toString()));
         atts.addElement(new Attribute(FeatureSet.LengthFeature.toString()));
+        atts.addElement(new Attribute(FeatureSet.AngleWithWindow.toString()));
+        atts.addElement(new Attribute(FeatureSet.MSEFeature.toString()));
         return atts;
     }
 

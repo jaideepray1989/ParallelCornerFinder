@@ -2,7 +2,7 @@ package cornerfinders.impl.rankfragmenter;
 
 import cornerfinders.core.shapes.TPoint;
 
-class RFNode {
+public class RFNode {
     public int id;
     public TPoint corner;
     public double cost;                 // data item

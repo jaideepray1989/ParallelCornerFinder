@@ -79,7 +79,7 @@ public class Figure extends JPanel {
         drawShape(shape);
     }
 
-    public void renderFigure(List<TStroke> figure,List<TPoint> corners){
+    public void renderFigure(List<TStroke> figure){
         JFrame testFrame = new JFrame();
         final Figure comp = new Figure();
         comp.setPreferredSize(new Dimension(1000, 1000));
