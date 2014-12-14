@@ -6,6 +6,7 @@ import cornerfinders.impl.KimCornerFinder;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
 import cornerfinders.impl.rankfragmenter.RFCornerFinder;
+import cornerfinders.impl.combination.objectivefuncs.PolylineMSEObjectiveFunction;
 import cornerfinders.render.Figure;
 import utils.validator.CornerValidator;
 import utils.validator.SketchDataValidator;
@@ -13,6 +14,7 @@ import utils.validator.SketchDataValidator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import cornerfinders.impl.combination.*;
 
 /**
  * Created by jaideepray on 12/12/14.
@@ -47,7 +49,11 @@ public class CheckAccuracyCF {
         List<TPoint> shapePoints = Lists.newArrayList();
         int numPoints = 0;
         for (List<TStroke> sList : strokeMap.values()) {
+            List<TPoint> szC = Lists.newArrayList();
+            szC=null;
+            render.renderFigure(sList,szC);
             for (TStroke s : sList) {
+
                 numPoints += s.getPoints().size();
                 if (!SketchDataValidator.isValidStroke(s)) continue;
                 shapePoints.addAll(s.getPoints());
@@ -57,7 +63,7 @@ public class CheckAccuracyCF {
                     strawCorners.addAll(stC);
 
                 ArrayList<Integer> c2 = sezginCornerFinder.findCorners(s);
-                List<TPoint> szC = fetchCornerPoints(s, c2);
+                szC = fetchCornerPoints(s, c2);
                 if (!szC.isEmpty())
                     sezginCorners.addAll(szC);
 
@@ -90,6 +96,7 @@ public class CheckAccuracyCF {
             System.out.println("RFC");
             printCorners(CornerValidator.validateCorners(rfCorners));
             System.out.println("------------------------------------");
+            //System.out.println("Total Corners:" + allCorners.size());
         }
     }
 

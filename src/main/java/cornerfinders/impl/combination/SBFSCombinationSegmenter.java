@@ -11,7 +11,7 @@ public class SBFSCombinationSegmenter {
 
 	private static final double S_THRESHOLD = 2.020747995;
 
-	private List<Integer> sbfs(List<Integer> corners, TStroke stroke,
+	public List<Integer> sbfs(List<Integer> corners, TStroke stroke,
 			IObjectiveFunction objFunction) {
 
 		if (corners.size() <= 2)
