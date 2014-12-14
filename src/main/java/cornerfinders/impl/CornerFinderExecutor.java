@@ -13,10 +13,7 @@ public class CornerFinderExecutor {
 			new ShortStrawCornerFinder() };
 
 	public static void executeAllCornerFinders() {
-
 		List<TStroke> strokes = StrokeFetcher.fetchAllStrokes();
-
-		
 		for (AbstractCornerFinder cornerFinder : allCornerFinders) {
 			for (TStroke s : strokes) {
 				ArrayList<Integer> corners = cornerFinder.findCorners(s);
