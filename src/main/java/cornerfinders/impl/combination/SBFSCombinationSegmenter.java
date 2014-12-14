@@ -92,15 +92,22 @@ public class SBFSCombinationSegmenter {
 		// }
 		// }
 
+		double maxVal = 0.0d;
+		int maxIndex = 0;
 		for (int i = 2; i < d1Errors.length; i++) {
 			if (d1Errors[i] > S_THRESHOLD) {
 				bestSubset = cornerSubsetList.get(i - 1);
 				break;
 			}
+			if(d1Errors[i] > maxVal)	{
+				maxVal = d1Errors[i];
+				maxIndex = i;
+			}
 		}
 
-		if (bestSubset == null)
-			bestSubset = cornerSubsetList.get(0);
+		if (bestSubset == null)	{
+			bestSubset = cornerSubsetList.get(maxIndex);
+		}
 
 		Collections.sort(bestSubset);
 
