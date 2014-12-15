@@ -3,19 +3,23 @@ package cornerfinders.impl.rankfragmenter;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.AbstractCornerFinder;
 import cornerfinders.impl.rankfragmenter.features.classifier.train.TrainRFClassifier;
-import weka.classifiers.MultipleClassifiersCombiner;
+import weka.classifiers.Classifier;
 import weka.classifiers.bayes.BayesianLogisticRegression;
+import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.meta.Vote;
 import weka.classifiers.trees.RandomForest;
 import weka.core.Instance;
 import weka.core.Instances;
 
 import java.util.List;
+import java.util.Random;
 
 public class CornerClassifier {
     private RandomForest randomForestClassifier;
     private BayesianLogisticRegression logisticRegClassifier;
-    private MultipleClassifiersCombiner combiner;
+    private Vote combiner;
     private TrainRFClassifier trainRFClassifier;
+    private NaiveBayes naiveBayesClassifier;
     private Instances train;
 
 
@@ -27,26 +31,24 @@ public class CornerClassifier {
         return randomForestClassifier;
     }
 
-    private BayesianLogisticRegression getLogisticRegClassifier() {
-        BayesianLogisticRegression logisticRegClassifier = new BayesianLogisticRegression();
-        logisticRegClassifier.setNumFolds(10);
-        logisticRegClassifier.setMaxIterations(1000);
-        return logisticRegClassifier;
+
+    private Vote getCombiner(Classifier[] classifiers) {
+        combiner = new Vote();
+        combiner.setClassifiers(classifiers);
+        combiner.setSeed(new Random(System.currentTimeMillis()).nextInt());
+        return combiner;
     }
 
-    CornerClassifier(AbstractCornerFinder trainer, List<TStroke> trainingSet) {
-        randomForestClassifier = createRandomForestClassifier();
-        logisticRegClassifier = getLogisticRegClassifier();
+
+    CornerClassifier(List<AbstractCornerFinder> trainers, List<TStroke> trainingSet) {
+        Classifier[] classifiers = new Classifier[3];
+        classifiers[0] = createRandomForestClassifier();
         trainRFClassifier = new TrainRFClassifier();
-            combiner = new MultipleClassifiersCombiner() {
-            @Override
-            public void buildClassifier(Instances instances) throws Exception {
-
-            }
-        };
-
         try {
-            trainClassifier(randomForestClassifier, trainingSet, trainer);
+            Instances dataSet = getTrainingDataSet(trainingSet, trainers);
+            randomForestClassifier.buildClassifier(dataSet);
+//            Vote combiner = getCombiner(classifiers);
+//            combiner.buildClassifier(dataSet);
         } catch (Exception ex) {
             System.out.println("could not train classifier");
         }
@@ -57,17 +59,15 @@ public class CornerClassifier {
         double[] pred;
         try {
             pred = randomForestClassifier.distributionForInstance(testInstance);
-            logisticRegClassifier.distributionForInstance(testInstance);
-
         } catch (Exception ex) {
             return false;
         }
         return (pred[0] > 0.1);
     }
 
-    public void trainClassifier(RandomForest randomForestClassifier, List<TStroke> strokes, AbstractCornerFinder cornerFinder) throws Exception {
-        train = trainRFClassifier.loadTrainingData(strokes, cornerFinder);
-        randomForestClassifier.buildClassifier(train);
+    public Instances getTrainingDataSet(List<TStroke> strokes, List<AbstractCornerFinder> cornerFinders) {
+        train = trainRFClassifier.loadTrainingData(strokes, cornerFinders);
+        return train;
     }
 
 

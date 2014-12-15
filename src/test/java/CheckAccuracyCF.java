@@ -7,14 +7,14 @@ import cornerfinders.impl.KimCornerFinder;
 import cornerfinders.impl.SezginCornerFinder;
 import cornerfinders.impl.ShortStrawCornerFinder;
 import cornerfinders.impl.rankfragmenter.RFCornerFinder;
+import cornerfinders.impl.rankfragmenter.rfutils.RFUtils;
 import cornerfinders.parallel.ParallelMergedCornerFinder;
 import cornerfinders.parallel.SerialMergedCornerFinder;
 import cornerfinders.parallel.ShapeProcessor;
+import utils.validator.CornerValidator;
 import utils.validator.SketchDataValidator;
 
 import java.util.*;
-
-import cornerfinders.impl.combination.*;
 
 /**
  * Created by jaideepray on 12/12/14.
@@ -33,14 +33,14 @@ public class CheckAccuracyCF {
         return corners;
     }
 
-    public static RFCornerFinder trainRFClassifier(AbstractCornerFinder cornerFinder) {
+    public static RFCornerFinder trainRFClassifier(List<AbstractCornerFinder> cornerFinders) {
 
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(40);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(10);
         List<TStroke> trainingSet = Lists.newArrayList();
         for (Map.Entry<String, List<TStroke>> entry : strokeMap.entrySet()) {
             trainingSet.addAll(entry.getValue());
         }
-        return new RFCornerFinder(30, trainingSet, cornerFinder);
+        return new RFCornerFinder(30, trainingSet, cornerFinders);
     }
 
     public static void checkAccuracy() {
@@ -48,8 +48,12 @@ public class CheckAccuracyCF {
         SezginCornerFinder sezginCornerFinder = new SezginCornerFinder();
         KimCornerFinder kimCornerFinder = new KimCornerFinder();
         AngleCornerFinder angleCornerFinder = new AngleCornerFinder();
-        // RFCornerFinder rfCornerFinder = trainRFClassifier(strawCornerFinder);
-
+        List<AbstractCornerFinder> cornerFinders = Lists.newArrayList();
+        cornerFinders.add(sezginCornerFinder);
+        cornerFinders.add(kimCornerFinder);
+        cornerFinders.add(angleCornerFinder);
+        cornerFinders.add(strawCornerFinder);
+        RFCornerFinder rfCornerFinder = trainRFClassifier(cornerFinders);
         ParallelMergedCornerFinder parallelMergedCornerFinder = new ParallelMergedCornerFinder();
         SerialMergedCornerFinder serialMergedCornerFinder = new SerialMergedCornerFinder();
         ShapeProcessor shapeProcessor = new ShapeProcessor();
@@ -59,6 +63,9 @@ public class CheckAccuracyCF {
         long parallelShapeTime = 0;
         int numPoints = 0;
         List<TStroke> shape = Lists.newArrayList();
+        int numRFCorners = 0;
+        int numCorners = 0;
+        double error = 0.0;
         for (List<TStroke> sList : strokeMap.values()) {
             if (sList.size() < 5) continue;
             shape.clear();
@@ -73,8 +80,14 @@ public class CheckAccuracyCF {
                 long tp1 = System.nanoTime();
                 ArrayList<Integer> parallelFinalIndices = parallelMergedCornerFinder.findCorners(s);
                 long tp2 = System.nanoTime();
+                ArrayList<Integer> rfCorners = rfCornerFinder.findCorners(s);
+                numCorners += serialFinalIndices.size();
+                numRFCorners += rfCorners.size();
                 parallelTime += (tp2 - tp1);
+                computeError(fetchCornerPoints(s, serialFinalIndices), fetchCornerPoints(s, rfCorners));
                 System.out.println("stroke size :: " + s.getPoints().size());
+                System.out.println("corners detected ::" + serialFinalIndices.size());
+                System.out.println("rfCorners detected ::" + rfCorners.size());
                 System.out.println("serial time :: " + (ts2 - ts1));
                 System.out.println("parallel time :: " + (tp2 - tp1));
             }
@@ -85,12 +98,13 @@ public class CheckAccuracyCF {
             long tsp2 = System.nanoTime();
             parallelShapeTime += (tsp2 - tsp1);
             System.out.println("shape in parallel time :: " + (tsp2 - tsp1));
-
-            System.out.println();
+            System.out.println("Corners :: " + numCorners + "rf Corners :: " + numRFCorners);
             System.out.println("------------------------------------");
         }
 
+        System.out.println("Mean squared distance error :: " + error);
         System.out.println("------------------------------------");
+        System.out.println(" Average stroke speed up ::" + (1.0 * serialTime) / parallelTime);
         System.out.println("Average speed up :: " + (1.0 * serialTime) / parallelShapeTime);
     }
 
@@ -99,6 +113,11 @@ public class CheckAccuracyCF {
         for (TPoint pt : corners) {
             pt.printPoint();
         }
+    }
+
+    public static void computeError(List<TPoint> actualCorners, List<TPoint> rfCorners) {
+        printCorners(actualCorners);
+        printCorners(rfCorners);
     }
 
     public static void main(String[] args) {

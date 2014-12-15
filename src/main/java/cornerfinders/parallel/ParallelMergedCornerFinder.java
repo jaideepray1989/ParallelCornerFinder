@@ -2,9 +2,6 @@ package cornerfinders.parallel;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.*;
 import cornerfinders.impl.combination.SBFSCombinationSegmenter;
@@ -13,7 +10,6 @@ import cornerfinders.parallel.callable.CornerFinderCallable;
 import utils.ITask;
 import utils.TaskRunner;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

@@ -7,6 +7,7 @@ import cornerfinders.core.shapes.TStroke;
 import cornerfinders.impl.*;
 import cornerfinders.impl.combination.SBFSCombinationSegmenter;
 import cornerfinders.impl.combination.objectivefuncs.MSEObjectiveFunction;
+import cornerfinders.impl.rankfragmenter.RFCornerFinder;
 import utils.TaskRunner;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class SerialMergedCornerFinder extends AbstractCornerFinder {
     private SezginCornerFinder sezginCornerFinder;
     private KimCornerFinder kimCornerFinder;
     private AngleCornerFinder angleCornerFinder;
+    private RFCornerFinder rfCornerFinder;
 
     public SerialMergedCornerFinder() {
         shortStrawCornerFinder = new ShortStrawCornerFinder();

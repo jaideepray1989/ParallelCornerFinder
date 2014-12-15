@@ -20,23 +20,33 @@ import java.util.Map;
 
 public class TrainRFClassifier {
 
-    public Instances loadTrainingData(List<TStroke> strokes, AbstractCornerFinder cornerFinder) {
+    public double cornerProbability = 0.0;
+
+    public Instances loadTrainingData(List<TStroke> strokes, List<AbstractCornerFinder> cornerFinders) {
         FastVector fvAttributes = FeatureAttributes.getAttributeSet();
         RFInitializer rfInitializer = new RFInitializer();
         Instances instances = new Instances("TRAIN", fvAttributes, strokes.size());
         instances.setClassIndex(0);
+        Integer numPoints = 0;
+        Integer corner = 0;
         for (int i = 0; i < strokes.size(); i++) {
             Map<Integer, RFNode> rfNodeMap = rfInitializer.getInitialList(strokes.get(i).getPoints(), true);
-            ArrayList<Integer> corners = cornerFinder.findCorners(strokes.get(i));
-            for (Map.Entry<Integer, RFNode> entry : rfNodeMap.entrySet()) {
-                RFNode value = entry.getValue();
-                boolean isPointACorner = corners.indexOf(entry.getKey()) != -1;
-                Instance trainingInstance = createInstance(strokes.get(i), value, instances);
-                String cornerInfo = (isPointACorner) ? FeatureAttributes.ClassSet.Corner.toString() : FeatureAttributes.ClassSet.NotACorner.toString();
-                trainingInstance.setClassValue(cornerInfo);
-                instances.add(trainingInstance);
+            for (AbstractCornerFinder cornerFinder : cornerFinders) {
+                ArrayList<Integer> corners = cornerFinder.findCorners(strokes.get(i));
+                for (Map.Entry<Integer, RFNode> entry : rfNodeMap.entrySet()) {
+                    numPoints++;
+                    RFNode value = entry.getValue();
+                    boolean isPointACorner = corners.indexOf(entry.getKey()) != -1;
+                    Instance trainingInstance = createInstance(strokes.get(i), value, instances);
+                    String cornerInfo = (isPointACorner) ? FeatureAttributes.ClassSet.Corner.toString() : FeatureAttributes.ClassSet.NotACorner.toString();
+                    trainingInstance.setClassValue(cornerInfo);
+                    if (isPointACorner)
+                        corner++;
+                    instances.add(trainingInstance);
+                }
             }
         }
+        cornerProbability = (1.0 * corner) / numPoints;
         return instances;
     }
 

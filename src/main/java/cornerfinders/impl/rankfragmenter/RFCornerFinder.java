@@ -38,8 +38,8 @@ public class RFCornerFinder extends AbstractCornerFinder {
         return Lists.newArrayList(prunedList.keySet());
     }
 
-    public RFCornerFinder(Integer np, List<TStroke> trainingSet, AbstractCornerFinder trainer) {
-        classifier = new CornerClassifier(trainer, trainingSet);
+    public RFCornerFinder(Integer np, List<TStroke> trainingSet, List<AbstractCornerFinder> trainers) {
+        classifier = new CornerClassifier(trainers, trainingSet);
         rfInitializer = new RFInitializer();
         cornerPruner = new CornerPruner();
         notToBePruned = np;
