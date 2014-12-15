@@ -57,7 +57,7 @@ public class CheckAccuracyCF {
         ParallelMergedCornerFinder parallelMergedCornerFinder = new ParallelMergedCornerFinder();
         SerialMergedCornerFinder serialMergedCornerFinder = new SerialMergedCornerFinder();
         ShapeProcessor shapeProcessor = new ShapeProcessor();
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchShapes(5);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchShapes(80);
         long serialTime = 0;
         long parallelTime = 0;
         long parallelShapeTime = 0;
@@ -66,6 +66,8 @@ public class CheckAccuracyCF {
         int numRFCorners = 0;
         int numCorners = 0;
         double error = 0.0;
+        long initialTss = serialTime;
+        int shapeSize = 0;
         for (List<TStroke> sList : strokeMap.values()) {
             if (sList.size() < 5) continue;
             shape.clear();
@@ -84,22 +86,27 @@ public class CheckAccuracyCF {
                 numCorners += serialFinalIndices.size();
                 numRFCorners += rfCorners.size();
                 parallelTime += (tp2 - tp1);
+                shapeSize += s.getPoints().size();
                 computeError(fetchCornerPoints(s, serialFinalIndices), fetchCornerPoints(s, rfCorners));
-                System.out.println("stroke size :: " + s.getPoints().size());
-                System.out.println("corners detected ::" + serialFinalIndices.size());
-                System.out.println("rfCorners detected ::" + rfCorners.size());
-                System.out.println("serial time :: " + (ts2 - ts1));
-                System.out.println("parallel time :: " + (tp2 - tp1));
+                //System.out.println("stroke size :: " + s.getPoints().size());
+                //System.out.println("corners detected ::" + serialFinalIndices.size());
+                //System.out.println("rfCorners detected ::" + rfCorners.size());
+                //System.out.println("serial time :: " + (ts2 - ts1));
+                //System.out.println("parallel time :: " + (tp2 - tp1));
             }
 
+            
             /*running entire shape in parallel*/
             long tsp1 = System.nanoTime();
             shapeProcessor.processStrokesInParallel(parallelMergedCornerFinder, shape);
             long tsp2 = System.nanoTime();
             parallelShapeTime += (tsp2 - tsp1);
-            System.out.println("shape in parallel time :: " + (tsp2 - tsp1));
-            System.out.println("Corners :: " + numCorners + "rf Corners :: " + numRFCorners);
-            System.out.println("------------------------------------");
+            System.out.println(shapeSize + "," + (serialTime - initialTss) + "," + (tsp2 - tsp1));
+            //System.out.println("Shape size :: " + shapeSize);
+            //System.out.println("Shape in Serial time :: " + (serialTime - initialTss));
+            //System.out.println("Shape in parallel time :: " + (tsp2 - tsp1));
+            //System.out.println("Corners :: " + numCorners + "rf Corners :: " + numRFCorners);
+            //System.out.println("------------------------------------");
         }
 
         System.out.println("Mean squared distance error :: " + error);
@@ -109,9 +116,9 @@ public class CheckAccuracyCF {
     }
 
     public static void printCorners(List<TPoint> corners) {
-        System.out.println("Number of corners :: " + corners.size());
+        //System.out.println("Number of corners :: " + corners.size());
         for (TPoint pt : corners) {
-            pt.printPoint();
+            //pt.printPoint();
         }
     }
 
