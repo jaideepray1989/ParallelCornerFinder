@@ -35,7 +35,7 @@ public class CheckAccuracyCF {
 
     public static RFCornerFinder trainRFClassifier(List<AbstractCornerFinder> cornerFinders) {
 
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(10);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchShapes(40);
         List<TStroke> trainingSet = Lists.newArrayList();
         for (Map.Entry<String, List<TStroke>> entry : strokeMap.entrySet()) {
             trainingSet.addAll(entry.getValue());
@@ -57,7 +57,7 @@ public class CheckAccuracyCF {
         ParallelMergedCornerFinder parallelMergedCornerFinder = new ParallelMergedCornerFinder();
         SerialMergedCornerFinder serialMergedCornerFinder = new SerialMergedCornerFinder();
         ShapeProcessor shapeProcessor = new ShapeProcessor();
-        Map<String, List<TStroke>> strokeMap = DBUtils.fetchStrokes(5);
+        Map<String, List<TStroke>> strokeMap = DBUtils.fetchShapes(5);
         long serialTime = 0;
         long parallelTime = 0;
         long parallelShapeTime = 0;

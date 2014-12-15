@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class DBUtils {
 
-    public static Map<String, List<TStroke>> fetchStrokes(int numData) {
+    public static Map<String, List<TStroke>> fetchShapes(int numData) {
         ConnectDB dbConnect = new ConnectDB();
         Connection conn = dbConnect.startConnection();
         Map<String, List<TStroke>> parsedMap = Maps.newHashMap();
