@@ -317,7 +317,7 @@ public class Features {
      *
      * @param s
      */
-    public synchronized TStroke cleanStroke(TStroke s) {
+    public TStroke cleanStroke(TStroke s) {
         List<TPoint> pts = s.getPoints();
         if (pts.size() > 1) {
             int i = 0;

@@ -10,12 +10,14 @@ import cornerfinders.impl.*;
 import cornerfinders.impl.combination.SBFSCombinationSegmenter;
 import cornerfinders.impl.combination.objectivefuncs.MSEObjectiveFunction;
 import cornerfinders.parallel.callable.CornerFinderCallable;
+import utils.ITask;
 import utils.TaskRunner;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 
 public class ParallelMergedCornerFinder extends AbstractCornerFinder {
     private ShortStrawCornerFinder shortStrawCornerFinder;
@@ -30,42 +32,41 @@ public class ParallelMergedCornerFinder extends AbstractCornerFinder {
         kimCornerFinder = new KimCornerFinder();
         angleCornerFinder = new AngleCornerFinder();
         // has to be injected
-        taskRunner = new TaskRunner<ArrayList<Integer>>();
+        taskRunner = new TaskRunner<ArrayList<Integer>>(4);
     }
 
     @Override
     public ArrayList<Integer> findCorners(TStroke stroke) {
-        List<ListenableFuture<ArrayList<Integer>>> futures = Lists.newArrayList();
-        CornerFinderCallable shortStrawCallable = new CornerFinderCallable(stroke.getCloned(), shortStrawCornerFinder);
-        CornerFinderCallable sezginCallable = new CornerFinderCallable(stroke.getCloned(), sezginCornerFinder);
-        CornerFinderCallable kimCallable = new CornerFinderCallable(stroke.getCloned(), kimCornerFinder);
-        CornerFinderCallable angleCornerCallable = new CornerFinderCallable(stroke.getCloned(), angleCornerFinder);
-        ListenableFuture<ArrayList<Integer>> shortStrawFuture = taskRunner.runTask(shortStrawCallable);
-        ListenableFuture<ArrayList<Integer>> sezginFuture = taskRunner.runTask(sezginCallable);
-        ListenableFuture<ArrayList<Integer>> kimFuture = taskRunner.runTask(kimCallable);
-        ListenableFuture<ArrayList<Integer>> angleFuture = taskRunner.runTask(angleCornerCallable);
-        futures.add(shortStrawFuture);
-        futures.add(sezginFuture);
-        futures.add(kimFuture);
-        futures.add(angleFuture);
-        ArrayList<Integer> finalIndices = mergeCornerFinder(futures, stroke);
-        return finalIndices;
+        List<ITask<ArrayList<Integer>>> cornerFinderCallables = Lists.newArrayList();
+        CornerFinderCallable shortStrawCallable = new CornerFinderCallable(stroke.clone(), shortStrawCornerFinder);
+        CornerFinderCallable sezginCallable = new CornerFinderCallable(stroke.clone(), sezginCornerFinder);
+        CornerFinderCallable kimCallable = new CornerFinderCallable(stroke.clone(), kimCornerFinder);
+        CornerFinderCallable angleCornerCallable = new CornerFinderCallable(stroke.clone(), angleCornerFinder);
+        cornerFinderCallables.add(shortStrawCallable);
+        cornerFinderCallables.add(sezginCallable);
+        cornerFinderCallables.add(kimCallable);
+        cornerFinderCallables.add(angleCornerCallable);
+        try {
+            return mergeCornerFinder(taskRunner.invokeAll(cornerFinderCallables), stroke);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("merging failed");
+        }
+        return Lists.newArrayList();
     }
 
-    public ArrayList<Integer> mergeCornerFinder(List<ListenableFuture<ArrayList<Integer>>> futures, final TStroke stroke) {
+    public ArrayList<Integer> mergeCornerFinder(List<Future<ArrayList<Integer>>> futures, final TStroke stroke) {
         final Set<Integer> cornerIndicesList = Sets.newHashSet(); // it has all the corners
         final SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
         final MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
-        final ListenableFuture<List<ArrayList<Integer>>> resultsFuture
-                = Futures.allAsList(futures);
         try {
-            List<ArrayList<Integer>> lists = resultsFuture.get();
-            for (ArrayList<Integer> ptList : lists) {
-                cornerIndicesList.addAll(ptList);
+            for (Future<ArrayList<Integer>> future : futures) {
+                cornerIndicesList.addAll(future.get());
             }
         } catch (Exception e) {
         }
         return (ArrayList) segmenter.sbfs(Lists.newArrayList(cornerIndicesList), stroke, objectiveFunction);
+        //return Lists.newArrayList(cornerIndicesList);
 
     }
 

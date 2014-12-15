@@ -50,7 +50,7 @@ public abstract class AbstractCornerFinder {
      *
      * @return Arc length values at each point
      */
-    public synchronized double[] arcLength() {
+    public double[] arcLength() {
         int numPts = pts.size();
 
         double[] arcLength = new double[numPts];

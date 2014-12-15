@@ -136,7 +136,7 @@ public class TLine{
    * (i.e., the lines are parallel).
    * @return The intersection point between the two lines
    */
-  public static double [] getIntersection(double l1_x1, double l1_y1, double l1_x2, double l1_y2, 
+  public static double [] getIntersection(double l1_x1, double l1_y1, double l1_x2, double l1_y2,
 		  double l2_x1, double l2_y1, double l2_x2, double l2_y2){
     
     double[] array1 = getABCArray(l1_x1, l1_y1, l1_x2, l1_y2);
@@ -227,17 +227,11 @@ public class TLine{
      }
    }
 
-    if(Math.abs(a1 * x + b1 * y - c1) > .001 || 
+    if(Math.abs(a1 * x + b1 * y - c1) > .001 ||
         Math.abs(a2 * x + b2 * y - c2) > .001){
-      System.out.println("["+a1+","+b1+","+c1+"]["+a2+","+b2+","+c2+"]");
-      System.out.println("Failed Intersection! " + x + "," + y);
-      System.out.println(Math.abs(a1 * x + b1 * y - c1));
-      System.out.println(Math.abs((a2 * x) + (b2 * y) - c2) + " " +  ((a2 * x) + (b2 * y) - c2) + " a2 * x = " + (a2 * x) + "  b2 * y = " + (b2 * y) + " c2 = " + c2 );
-      System.err.println("Failed Intersection! " + x + "," + y);
-      System.err.println("Initial values were: [(" + l1_x1 + "," + l1_y1 + "),(" + l1_x2 + "," + l1_y2 + ")] [(" + l2_x1 + "," + l2_y1 + "),(" + l2_x2 + "," + l2_y2 + ")]");
       return null;
     }
-    double [] iPoint = {x,y}; 
+    double [] iPoint = {x,y};
     return iPoint;
   }
   

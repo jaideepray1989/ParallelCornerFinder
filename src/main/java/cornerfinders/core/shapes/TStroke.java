@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author hammond
  */
-public class TStroke implements Cloneable {
+public class TStroke {
 
     List<TPoint> pointList = Lists.newArrayList();
 
@@ -33,15 +33,15 @@ public class TStroke implements Cloneable {
     public TStroke() {
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return new TStroke(Lists.newArrayList(this.getPoints()));
-    }
 
-    public TStroke getCloned() {
-        TStroke stroke;
+    @Override
+    public TStroke clone() {
+        TStroke stroke = new TStroke();
         try {
-            stroke = (TStroke) clone();
+            for (TPoint pt : this.getPoints()) {
+                TPoint clonedPt = pt.clone();
+                stroke.addPoint(clonedPt);
+            }
         } catch (Exception ex) {
             return null;
         }

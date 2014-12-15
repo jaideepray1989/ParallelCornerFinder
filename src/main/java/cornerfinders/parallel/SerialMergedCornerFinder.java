@@ -22,8 +22,6 @@ public class SerialMergedCornerFinder extends AbstractCornerFinder {
     private SezginCornerFinder sezginCornerFinder;
     private KimCornerFinder kimCornerFinder;
     private AngleCornerFinder angleCornerFinder;
-    private Set<Integer> combinedCorners = Sets.newHashSet();
-
 
     public SerialMergedCornerFinder() {
         shortStrawCornerFinder = new ShortStrawCornerFinder();
@@ -34,25 +32,26 @@ public class SerialMergedCornerFinder extends AbstractCornerFinder {
 
     @Override
     public ArrayList<Integer> findCorners(TStroke stroke) {
-        ArrayList<Integer> allCorners = Lists.newArrayList();
-        ArrayList<Integer> c1 = shortStrawCornerFinder.findCorners(stroke);
+        Set<Integer> combinedCorners = Sets.newHashSet();
+        ArrayList<Integer> c1 = shortStrawCornerFinder.findCorners(stroke.clone());
         combinedCorners.addAll(c1);
-        ArrayList<Integer> c2 = sezginCornerFinder.findCorners(stroke);
+        ArrayList<Integer> c2 = sezginCornerFinder.findCorners(stroke.clone());
         combinedCorners.addAll(c2);
-        ArrayList<Integer> c3 = kimCornerFinder.findCorners(stroke);
+        ArrayList<Integer> c3 = kimCornerFinder.findCorners(stroke.clone());
         combinedCorners.addAll(c3);
-        ArrayList<Integer> c4 = angleCornerFinder.findCorners(stroke);
+        ArrayList<Integer> c4 = angleCornerFinder.findCorners(stroke.clone());
         combinedCorners.addAll(c4);
-        allCorners.addAll(combinedCorners);
-        ArrayList<Integer> combine = combine(allCorners, stroke);
-        return combine;
+        return combine(Lists.newArrayList(combinedCorners), stroke);
     }
 
     public ArrayList<Integer> combine(ArrayList<Integer> allCorners, TStroke s) {
-        SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
-        MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
-        return (ArrayList) segmenter.sbfs(Lists.newArrayList(allCorners), s, objectiveFunction);
+        return getCornersAfterSBFS(allCorners,s);
     }
 
+    public ArrayList<Integer> getCornersAfterSBFS(ArrayList<Integer> cornerList, TStroke stroke) {
+        final SBFSCombinationSegmenter segmenter = new SBFSCombinationSegmenter();
+        final MSEObjectiveFunction objectiveFunction = new MSEObjectiveFunction();
+        return (ArrayList) segmenter.sbfs(cornerList, stroke, objectiveFunction);
+    }
 
 }

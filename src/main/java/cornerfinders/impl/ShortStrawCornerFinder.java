@@ -9,42 +9,41 @@ import java.util.List;
 import java.util.Arrays;
 
 public class ShortStrawCornerFinder extends AbstractCornerFinder {
-	private final boolean DEBUG = false;
+    private final boolean DEBUG = false;
 
-	private final double PERCENTAGE = 0.95;
+    private final double PERCENTAGE = 0.95;
 
-	private final double LINE_THRESHOLD = 0.95;
+    private final double LINE_THRESHOLD = 0.95;
 
-	private double resampleSpacing = 5.0;
+    private double resampleSpacing = 5.0;
 
-	private int window = 3;
+    private int window = 3;
 
-	/**
-	 * Finds the corners for a stroke
-	 * 
-	 * @param s
-	 *            Stroke to find the corners for
-	 * @return Corners of a stroke
-	 */
-	public ArrayList<Integer> findCorners(TStroke s) {
-		Features strokeCleaner = new Features();
-		this.stroke = strokeCleaner.cleanStroke(s);
+    /**
+     * Finds the corners for a stroke
+     *
+     * @param s Stroke to find the corners for
+     * @return Corners of a stroke
+     */
+    public ArrayList<Integer> findCorners(TStroke s) {
+        Features strokeCleaner = new Features();
+        this.stroke = strokeCleaner.cleanStroke(s);
 
-		resampleSpacing = determineResampleSpacing(this.stroke.getPoints());
+        resampleSpacing = determineResampleSpacing(this.stroke.getPoints());
 
-		this.pts = resamplePoints2(stroke, resampleSpacing);
-		this.stroke = new TStroke(pts);
-		arcLength = arcLength();
-		ArrayList<Integer> corners = new ArrayList<Integer>();
-		if (pts.size() > (window * 2)) {
-			corners = getCornersFromResampleLength(pts, window);
-		}
-		// ArrayList<Integer> corners = straightLineCornerFinder();
-		// ArrayList<Integer> corners = allPoints(pts, window);
+        this.pts = resamplePoints2(stroke, resampleSpacing);
+        this.stroke = new TStroke(pts);
+        arcLength = arcLength();
+        ArrayList<Integer> corners = new ArrayList<Integer>();
+        if (pts.size() > (window * 2)) {
+            corners = getCornersFromResampleLength(pts, window);
+        }
+        // ArrayList<Integer> corners = straightLineCornerFinder();
+        // ArrayList<Integer> corners = allPoints(pts, window);
 
-		// Debug: return original points
-		/*
-		 * this.stroke = strokeCleaner.cleanStroke(s); int numPts =
+        // Debug: return original points
+        /*
+         * this.stroke = strokeCleaner.cleanStroke(s); int numPts =
 		 * stroke.getPoints().size(); ArrayList<Integer> origCorners = new
 		 * ArrayList<Integer>(); for (int i = 0; i < numPts; i++)
 		 * origCorners.add(i);
@@ -52,434 +51,430 @@ public class ShortStrawCornerFinder extends AbstractCornerFinder {
 		 * return origCorners;
 		 */
 
-		return corners;
+        return corners;
 
-	}
+    }
 
-	/**
-	 * Resample a stroke's points to be roughly distApart euclidean distance
-	 * away from each other
-	 * 
-	 * @param s
-	 *            Stroke to resample the points for
-	 * @param distApart
-	 *            Distance each point should be away from the other
-	 * @return A list of resampled points
-	 */
+    /**
+     * Resample a stroke's points to be roughly distApart euclidean distance
+     * away from each other
+     *
+     * @param s         Stroke to resample the points for
+     * @param distApart Distance each point should be away from the other
+     * @return A list of resampled points
+     */
 
-	private List<TPoint> resamplePoints2(TStroke s, double I) {
-		List<TPoint> points = s.getPoints();
+    private List<TPoint> resamplePoints2(TStroke s, double I) {
+        List<TPoint> points = s.getPoints();
 
-		ArrayList<TPoint> newPoints = new ArrayList<TPoint>();
-		newPoints.add(points.get(0));
+        ArrayList<TPoint> newPoints = new ArrayList<TPoint>();
+        newPoints.add(points.get(0));
 
-		double D = 0;
+        double D = 0;
 
-		for (int i = 1; i < points.size(); i++) {
-			// Get the current distance distance between the two points
-			double d = distance(points.get(i - 1), points.get(i));
+        for (int i = 1; i < points.size(); i++) {
+            // Get the current distance distance between the two points
+            double d = distance(points.get(i - 1), points.get(i));
 
-			if (D + d >= I) {
-				double q_x = points.get(i - 1).getX()
-						+ (((I - D) / d) * (points.get(i).getX() - points.get(
-								i - 1).getX()));
+            if (D + d >= I) {
+                double q_x = points.get(i - 1).getX()
+                        + (((I - D) / d) * (points.get(i).getX() - points.get(
+                        i - 1).getX()));
 
-				double q_y = points.get(i - 1).getY()
-						+ (((I - D) / d) * (points.get(i).getY() - points.get(
-								i - 1).getY()));
+                double q_y = points.get(i - 1).getY()
+                        + (((I - D) / d) * (points.get(i).getY() - points.get(
+                        i - 1).getY()));
 
-				TPoint q = new TPoint(q_x, q_y);
+                TPoint q = new TPoint(q_x, q_y);
 
-				newPoints.add(q);
-				points.add(i, q);
+                newPoints.add(q);
+                points.add(i, q);
 
-				D = 0;
-			} else {
-				D = D + d;
-			}
-		}
+                D = 0;
+            } else {
+                D = D + d;
+            }
+        }
 
-		// points = newPoints;
+        // points = newPoints;
 
-		return newPoints;
-	}
+        return newPoints;
+    }
 
-	private double determineResampleSpacing(List<TPoint> pts) {
-		double totalLength = 0.0;
-		double minX = Double.POSITIVE_INFINITY;
-		double maxX = Double.NEGATIVE_INFINITY;
-		double minY = Double.POSITIVE_INFINITY;
-		double maxY = Double.NEGATIVE_INFINITY;
+    private double determineResampleSpacing(List<TPoint> pts) {
+        double totalLength = 0.0;
+        double minX = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
 
-		for (int i = 0; i < pts.size(); i++) {
-			double x = pts.get(i).getX();
-			double y = pts.get(i).getY();
+        for (int i = 0; i < pts.size(); i++) {
+            double x = pts.get(i).getX();
+            double y = pts.get(i).getY();
 
-			if (x < minX)
-				minX = x;
-			if (x > maxX)
-				maxX = x;
-			if (y < minY)
-				minY = y;
-			if (y > maxY)
-				maxY = y;
-			// not being used - commenting
-			// totalLength += distance(pts.get(i), pts.get(i + 1));
-		}
+            if (x < minX)
+                minX = x;
+            if (x > maxX)
+                maxX = x;
+            if (y < minY)
+                minY = y;
+            if (y > maxY)
+                maxY = y;
+            // not being used - commenting
+            // totalLength += distance(pts.get(i), pts.get(i + 1));
+        }
 
-		double diagonal = Math.sqrt(Math.pow(maxX - minX, 2)
-				+ Math.pow(maxY - minY, 2));
-		// double density = totalLength / diagonal;
+        double diagonal = Math.sqrt(Math.pow(maxX - minX, 2)
+                + Math.pow(maxY - minY, 2));
+        // double density = totalLength / diagonal;
 
-		double spacing = diagonal / 40.0;
+        double spacing = diagonal / 40.0;
 
-		return spacing;
-	}
+        return spacing;
+    }
 
 	/*
-	 * Corner fits
+     * Corner fits
 	 */
 
-	/**
-	 * Gets the corners from the resampled points. Works by finding the shortest
-	 * local length around a corner
-	 * 
-	 * @param pts
-	 *            Points of the stroke
-	 * @return Corners for the stroke
-	 */
-	private ArrayList<Integer> getCornersFromResampleLength(List<TPoint> pts,
-			int window) {
-		double[] distApart = new double[pts.size()];
-		double[] sortedDists = new double[pts.size() - (window * 2)];
-		double avgLengthApart = 0.0;
+    /**
+     * Gets the corners from the resampled points. Works by finding the shortest
+     * local length around a corner
+     *
+     * @param pts Points of the stroke
+     * @return Corners for the stroke
+     */
+    private ArrayList<Integer> getCornersFromResampleLength(List<TPoint> pts,
+                                                            int window) {
+        double[] distApart = new double[pts.size()];
+        double[] sortedDists = new double[pts.size() - (window * 2)];
+        double avgLengthApart = 0.0;
 
-		for (int i = window; i < pts.size() - window; i++) {
-			distApart[i] = distance(pts.get(i - window), pts.get(i + window));
+        for (int i = window; i < pts.size() - window; i++) {
+            distApart[i] = distance(pts.get(i - window), pts.get(i + window));
 
-			sortedDists[i - window] = distApart[i];
-			avgLengthApart += distApart[i];
-		}
+            sortedDists[i - window] = distApart[i];
+            avgLengthApart += distApart[i];
+        }
 
-		ArrayList<Integer> corners = new ArrayList<Integer>();
-		corners.add(0);
+        ArrayList<Integer> corners = new ArrayList<Integer>();
+        corners.add(0);
 
-		Arrays.sort(sortedDists);
-		double medianDist = sortedDists[sortedDists.length / 2];
+        Arrays.sort(sortedDists);
+        double medianDist = sortedDists[sortedDists.length / 2];
 
-		avgLengthApart /= (pts.size() - (window * 2));
-		double threshold = PERCENTAGE * medianDist;
+        avgLengthApart /= (pts.size() - (window * 2));
+        double threshold = PERCENTAGE * medianDist;
 
-		// double oldThreshold = 0.80 * maxLengthBetween(resampleSpacing,
-		// window);
-		// double d = 1.0;
+        // double oldThreshold = 0.80 * maxLengthBetween(resampleSpacing,
+        // window);
+        // double d = 1.0;
 
-		for (int i = window; i < distApart.length - window; i++) {
-			// Find only the local minimum
-			if (distApart[i] < threshold) {
-				double localMinimum = Double.POSITIVE_INFINITY;
-				int localMinimumIndex = i;
+        for (int i = window; i < distApart.length - window; i++) {
+            // Find only the local minimum
+            if (distApart[i] < threshold) {
+                double localMinimum = Double.POSITIVE_INFINITY;
+                int localMinimumIndex = i;
 
-				while (i < distApart.length - window
-						&& distApart[i] < threshold) {
-					if (distApart[i] < localMinimum) {
-						localMinimum = distApart[i];
-						localMinimumIndex = i;
-					}
+                while (i < distApart.length - window
+                        && distApart[i] < threshold) {
+                    if (distApart[i] < localMinimum) {
+                        localMinimum = distApart[i];
+                        localMinimumIndex = i;
+                    }
 
-					i++;
-				}
+                    i++;
+                }
 
-				// corners.add(new Integer(localMinimumIndex - window));
-				corners.add(new Integer(localMinimumIndex));
-				// corners.add(new Integer(localMinimumIndex + window));
-			}
-		}
+                // corners.add(new Integer(localMinimumIndex - window));
+                corners.add(new Integer(localMinimumIndex));
+                // corners.add(new Integer(localMinimumIndex + window));
+            }
+        }
 
-		corners.add(distApart.length - 1);
+        corners.add(distApart.length - 1);
 
-		// Collections.sort(corners);
+        // Collections.sort(corners);
 
-		return straightLinePostProcessing(corners, distApart);
+        return straightLinePostProcessing(corners, distApart);
 
-		// return corners;
-	}
+        // return corners;
+    }
 
-	private ArrayList<Integer> straightLinePostProcessing(
-			ArrayList<Integer> corners, double[] distApart) {
-		ArrayList<Integer> filteredCorners = new ArrayList<Integer>(corners);
+    private ArrayList<Integer> straightLinePostProcessing(
+            ArrayList<Integer> corners, double[] distApart) {
+        ArrayList<Integer> filteredCorners = new ArrayList<Integer>(corners);
 
-		boolean allLines = false;
+        boolean allLines = false;
 
-		while (!allLines) {
-			allLines = true;
+        while (!allLines) {
+            allLines = true;
 
-			for (int i = 1; i < filteredCorners.size(); i++) {
-				int c1 = filteredCorners.get(i - 1);
-				int c2 = filteredCorners.get(i);
+            for (int i = 1; i < filteredCorners.size(); i++) {
+                int c1 = filteredCorners.get(i - 1);
+                int c2 = filteredCorners.get(i);
 
-				if (!isLine(c1, c2, LINE_THRESHOLD)) {
-					int newCorner = minDistBetweenIndices(distApart, c1, c2);
-					filteredCorners.add(i, newCorner);
+                if (!isLine(c1, c2, LINE_THRESHOLD)) {
+                    int newCorner = minDistBetweenIndices(distApart, c1, c2);
+                    filteredCorners.add(i, newCorner);
 
-					allLines = false;
-				}
-			}
-		}
+                    allLines = false;
+                }
+            }
+        }
 
-		for (int i = 1; i < filteredCorners.size() - 1; i++) {
-			int c1 = filteredCorners.get(i - 1);
-			int c2 = filteredCorners.get(i);
-			int c3 = filteredCorners.get(i + 1);
+        for (int i = 1; i < filteredCorners.size() - 1; i++) {
+            int c1 = filteredCorners.get(i - 1);
+            int c2 = filteredCorners.get(i);
+            int c3 = filteredCorners.get(i + 1);
 
-			if (isLine(c1, c3, LINE_THRESHOLD)) {
-				filteredCorners.remove(i);
-				i--;
-			}
-		}
+            if (isLine(c1, c3, LINE_THRESHOLD)) {
+                filteredCorners.remove(i);
+                i--;
+            }
+        }
 
-		if (distance(pts.get(0), pts.get(filteredCorners.get(1))) < 15.0) {
-			filteredCorners.remove(1);
-		}
+        try {
+            if (filteredCorners.get(1) < pts.size() && distance(pts.get(0), pts.get(filteredCorners.get(1))) < 15.0) {
+                filteredCorners.remove(1);
+            }
 
-		if (distance(pts.get(pts.size() - 1),
-				pts.get(filteredCorners.get(filteredCorners.size() - 2))) < 15.0) {
-			filteredCorners.remove(filteredCorners.size() - 2);
-		}
+            if (filteredCorners.get(filteredCorners.size() - 2) < pts.size()) {
+                if (distance(pts.get(pts.size() - 1),
+                        pts.get(filteredCorners.get(filteredCorners.size() - 2))) < 15.0) {
+                    filteredCorners.remove(filteredCorners.size() - 2);
+                }
+            }
+        } catch (Exception ex) {
 
-		return filteredCorners;
-	}
+        }
+
+        return filteredCorners;
+    }
 
 	/*
-	 * SIDE PROJECT
+     * SIDE PROJECT
 	 */
 
-	private ArrayList<Integer> straightLineCornerFinder() {
-		double[] distApart = new double[pts.size()];
+    private ArrayList<Integer> straightLineCornerFinder() {
+        double[] distApart = new double[pts.size()];
 
-		for (int i = window; i < pts.size() - window; i++) {
-			distApart[i] = distance(pts.get(i - window), pts.get(i + window));
-		}
+        for (int i = window; i < pts.size() - window; i++) {
+            distApart[i] = distance(pts.get(i - window), pts.get(i + window));
+        }
 
-		double medianDistApart = getMedianDist(distApart);
-		distApart = refactorDistApart(distApart, medianDistApart * 0.95);
+        double medianDistApart = getMedianDist(distApart);
+        distApart = refactorDistApart(distApart, medianDistApart * 0.95);
 
-		ArrayList<Integer> corners = new ArrayList<Integer>();
-		corners.add(0);
-		corners.add(distApart.length - 1);
+        ArrayList<Integer> corners = new ArrayList<Integer>();
+        corners.add(0);
+        corners.add(distApart.length - 1);
 
-		boolean allLines = false;
+        boolean allLines = false;
 
-		while (!allLines) {
-			allLines = true;
+        while (!allLines) {
+            allLines = true;
 
-			for (int i = 1; i < corners.size(); i++) {
-				int c1 = corners.get(i - 1);
-				int c2 = corners.get(i);
+            for (int i = 1; i < corners.size(); i++) {
+                int c1 = corners.get(i - 1);
+                int c2 = corners.get(i);
 
-				if (!isLine(c1, c2, LINE_THRESHOLD)) {
-					int newCorner = minDistBetweenIndices(distApart, c1, c2);
-					corners.add(i, newCorner);
+                if (!isLine(c1, c2, LINE_THRESHOLD)) {
+                    int newCorner = minDistBetweenIndices(distApart, c1, c2);
+                    corners.add(i, newCorner);
 
-					allLines = false;
-				}
-			}
-		}
+                    allLines = false;
+                }
+            }
+        }
 
-		// Collections.sort(corners);
+        // Collections.sort(corners);
 
-		return corners;
-	}
+        return corners;
+    }
 
-	private double[] refactorDistApart(double[] distApart, double threshold) {
-		for (int i = 0; i < window; i++) {
-			distApart[i] = threshold;
-		}
+    private double[] refactorDistApart(double[] distApart, double threshold) {
+        for (int i = 0; i < window; i++) {
+            distApart[i] = threshold;
+        }
 
-		for (int i = distApart.length - window; i < distApart.length; i++) {
-			distApart[i] = threshold;
-		}
+        for (int i = distApart.length - window; i < distApart.length; i++) {
+            distApart[i] = threshold;
+        }
 
-		for (int i = 0; i < distApart.length; i++) {
-			// Find only the local minimum
-			if (distApart[i] < threshold) {
-				int startIndex = i;
+        for (int i = 0; i < distApart.length; i++) {
+            // Find only the local minimum
+            if (distApart[i] < threshold) {
+                int startIndex = i;
 
-				double localMinimum = Double.POSITIVE_INFINITY;
-				int localMinimumIndex = i;
+                double localMinimum = Double.POSITIVE_INFINITY;
+                int localMinimumIndex = i;
 
-				while (i < distApart.length - window
-						&& distApart[i] < threshold) {
-					if (distApart[i] < localMinimum) {
-						localMinimum = distApart[i];
-						localMinimumIndex = i;
-					}
+                while (i < distApart.length - window
+                        && distApart[i] < threshold) {
+                    if (distApart[i] < localMinimum) {
+                        localMinimum = distApart[i];
+                        localMinimumIndex = i;
+                    }
 
-					i++;
-				}
+                    i++;
+                }
 
-				for (int k = startIndex; k < i; k++) {
-					if (k != localMinimumIndex)
-						distApart[k] = threshold;
-				}
-			}
-		}
+                for (int k = startIndex; k < i; k++) {
+                    if (k != localMinimumIndex)
+                        distApart[k] = threshold;
+                }
+            }
+        }
 
-		return distApart;
-	}
+        return distApart;
+    }
 
-	private double getMedianDist(double[] distApart) {
-		double[] sortedDists = Arrays.copyOfRange(distApart, window,
-				distApart.length - window);
-		Arrays.sort(sortedDists);
+    private double getMedianDist(double[] distApart) {
+        double[] sortedDists = Arrays.copyOfRange(distApart, window,
+                distApart.length - window);
+        Arrays.sort(sortedDists);
 
-		return sortedDists[sortedDists.length / 2];
-	}
+        return sortedDists[sortedDists.length / 2];
+    }
 
-	private int minDistBetweenIndices(double[] distApart, int p1, int p2) {
-		int minIndex = Integer.MAX_VALUE;
-		double minValue = Double.POSITIVE_INFINITY;
+    private int minDistBetweenIndices(double[] distApart, int p1, int p2) {
+        int minIndex = Integer.MAX_VALUE;
+        double minValue = Double.POSITIVE_INFINITY;
 
 		/*
-		 * for (int i = p1 + 1; i < p2; i++) { if (distApart[i] < minValue) {
+         * for (int i = p1 + 1; i < p2; i++) { if (distApart[i] < minValue) {
 		 * minValue = distApart[i]; minIndex = i; } }
 		 */
 
-		int toMid = (p2 - p1) / 4;
+        int toMid = (p2 - p1) / 4;
 
-		// search for min dist halfway between?
-		for (int i = p1 + toMid; i < p2 - toMid; i++) {
-			if (distApart[i] < minValue) {
-				minValue = distApart[i];
-				minIndex = i;
-			}
-		}
+        // search for min dist halfway between?
+        for (int i = p1 + toMid; i < p2 - toMid; i++) {
+            if (distApart[i] < minValue) {
+                minValue = distApart[i];
+                minIndex = i;
+            }
+        }
 
-		return minIndex;
-	}
+        return minIndex;
+    }
 
-	private ArrayList<Integer> allPoints(List<TPoint> pts, int window) {
-		ArrayList<Integer> corners = new ArrayList<Integer>();
+    private ArrayList<Integer> allPoints(List<TPoint> pts, int window) {
+        ArrayList<Integer> corners = new ArrayList<Integer>();
 
-		for (int i = 0; i < pts.size(); i++) {
-			corners.add(i);
-		}
+        for (int i = 0; i < pts.size(); i++) {
+            corners.add(i);
+        }
 
-		return corners;
-	}
+        return corners;
+    }
 
-	/**
-	 * Gets the corners from the resampled points. Works by finding the shortest
-	 * local length around a corner
-	 * 
-	 * @return Corners for the stroke
-	 * 
-	 *         private ArrayList<Integer>
-	 *         getCornersFromResampleLength(List<TPoint> pts, int window) {
-	 *         double[] distApart = new double[pts.size()]; double[] stdDev =
-	 *         new double[pts.size()];
-	 * 
-	 *         for (int i = 7; i < pts.size() - 7; i++) { double[] distValues =
-	 *         new double[3];
-	 * 
-	 *         distValues[0] = euclidean(pts.get(i - 3), pts.get(i + 3)) /
-	 *         maxLengthBetween(resampleSpacing, 3); distValues[1] =
-	 *         euclidean(pts.get(i - 5), pts.get(i + 5)) /
-	 *         maxLengthBetween(resampleSpacing, 5); distValues[2] =
-	 *         euclidean(pts.get(i - 7), pts.get(i + 7)) /
-	 *         maxLengthBetween(resampleSpacing, 7);
-	 * 
-	 *         stdDev[i] = stdDev(distValues); }
-	 * 
-	 *         ArrayList<Integer> corners = new ArrayList<Integer>();
-	 *         corners.add(0);
-	 * 
-	 *         double avgStdDev = 0.0; for (int i = 7; i < stdDev.length - 7;
-	 *         i++) { avgStdDev += stdDev[i]; } avgStdDev /= (stdDev.length -
-	 *         14);
-	 * 
-	 *         double threshold = avgStdDev;
-	 * 
-	 *         for (int i = 7; i < stdDev.length - 7; i++) { // Find only the
-	 *         local maximum if (stdDev[i] > threshold) { double localMaximum =
-	 *         Double.NEGATIVE_INFINITY; int localMaximumIndex = i;
-	 * 
-	 *         while (i < stdDev.length && stdDev[i] > threshold) { if
-	 *         (stdDev[i] > localMaximum) { localMaximum = stdDev[i];
-	 *         localMaximumIndex = i; }
-	 * 
-	 *         i++; }
-	 * 
-	 *         corners.add(new Integer(localMaximumIndex)); } }
-	 * 
-	 *         corners.add(stdDev.length - 1);
-	 * 
-	 *         return corners; }
-	 */
+    /**
+     * Gets the corners from the resampled points. Works by finding the shortest
+     * local length around a corner
+     *
+     * @return Corners for the stroke
+     * <p/>
+     * private ArrayList<Integer>
+     * getCornersFromResampleLength(List<TPoint> pts, int window) {
+     * double[] distApart = new double[pts.size()]; double[] stdDev =
+     * new double[pts.size()];
+     * <p/>
+     * for (int i = 7; i < pts.size() - 7; i++) { double[] distValues =
+     * new double[3];
+     * <p/>
+     * distValues[0] = euclidean(pts.get(i - 3), pts.get(i + 3)) /
+     * maxLengthBetween(resampleSpacing, 3); distValues[1] =
+     * euclidean(pts.get(i - 5), pts.get(i + 5)) /
+     * maxLengthBetween(resampleSpacing, 5); distValues[2] =
+     * euclidean(pts.get(i - 7), pts.get(i + 7)) /
+     * maxLengthBetween(resampleSpacing, 7);
+     * <p/>
+     * stdDev[i] = stdDev(distValues); }
+     * <p/>
+     * ArrayList<Integer> corners = new ArrayList<Integer>();
+     * corners.add(0);
+     * <p/>
+     * double avgStdDev = 0.0; for (int i = 7; i < stdDev.length - 7;
+     * i++) { avgStdDev += stdDev[i]; } avgStdDev /= (stdDev.length -
+     * 14);
+     * <p/>
+     * double threshold = avgStdDev;
+     * <p/>
+     * for (int i = 7; i < stdDev.length - 7; i++) { // Find only the
+     * local maximum if (stdDev[i] > threshold) { double localMaximum =
+     * Double.NEGATIVE_INFINITY; int localMaximumIndex = i;
+     * <p/>
+     * while (i < stdDev.length && stdDev[i] > threshold) { if
+     * (stdDev[i] > localMaximum) { localMaximum = stdDev[i];
+     * localMaximumIndex = i; }
+     * <p/>
+     * i++; }
+     * <p/>
+     * corners.add(new Integer(localMaximumIndex)); } }
+     * <p/>
+     * corners.add(stdDev.length - 1);
+     * <p/>
+     * return corners; }
+     */
 
-	private double maxLengthBetween(double resampleSpacing, double window) {
-		return resampleSpacing * ((window + 1) * 2);
-	}
+    private double maxLengthBetween(double resampleSpacing, double window) {
+        return resampleSpacing * ((window + 1) * 2);
+    }
 
-	/**
-	 * Calculates the standard deviation for an array of values
-	 * 
-	 * @param values
-	 *            Values in an array
-	 * @return Std deviation of the values
-	 */
-	private double stdDev(double[] values) {
-		double sum = 0.0;
-		for (int i = 0; i < values.length; i++) {
-			sum += values[i];
-		}
-		double avg = sum / (double) values.length;
+    /**
+     * Calculates the standard deviation for an array of values
+     *
+     * @param values Values in an array
+     * @return Std deviation of the values
+     */
+    private double stdDev(double[] values) {
+        double sum = 0.0;
+        for (int i = 0; i < values.length; i++) {
+            sum += values[i];
+        }
+        double avg = sum / (double) values.length;
 
-		double stdDev = 0.0;
-		for (int i = 0; i < values.length; i++) {
-			stdDev += Math.pow(values[i] - avg, 2.0);
-		}
+        double stdDev = 0.0;
+        for (int i = 0; i < values.length; i++) {
+            stdDev += Math.pow(values[i] - avg, 2.0);
+        }
 
-		stdDev = Math.sqrt(stdDev / (double) values.length);
+        stdDev = Math.sqrt(stdDev / (double) values.length);
 
-		return stdDev;
-	}
+        return stdDev;
+    }
 
 	/*
-	 * Euclidean distance functions
+     * Euclidean distance functions
 	 */
 
-	/**
-	 * Finds and returns the Euclidean distance between two points
-	 * 
-	 * @param p0
-	 *            First point
-	 * @param p1
-	 *            Second point
-	 * @return Euclidean distance between p0 and p1
-	 */
-	protected double distance(TPoint p0, TPoint p1) {
-		return distance(p0.getX(), p0.getY(), p1.getX(), p1.getY());
-	}
+    /**
+     * Finds and returns the Euclidean distance between two points
+     *
+     * @param p0 First point
+     * @param p1 Second point
+     * @return Euclidean distance between p0 and p1
+     */
+    protected double distance(TPoint p0, TPoint p1) {
+        return distance(p0.getX(), p0.getY(), p1.getX(), p1.getY());
+    }
 
-	/**
-	 * Finds and returns the Euclidean distance between two points
-	 * 
-	 * @param x0
-	 *            First point's x-coordinate
-	 * @param x1
-	 *            Second point's x-coordinate
-	 * @param y0
-	 *            First point's y-coordinate
-	 * @param y1
-	 *            Second point's y-coordinate
-	 * @return
-	 */
-	protected double distance(double x0, double y0, double x1, double y1) {
-		double xSq = (x1 - x0) * (x1 - x0);
-		double ySq = (y1 - y0) * (y1 - y0);
+    /**
+     * Finds and returns the Euclidean distance between two points
+     *
+     * @param x0 First point's x-coordinate
+     * @param x1 Second point's x-coordinate
+     * @param y0 First point's y-coordinate
+     * @param y1 Second point's y-coordinate
+     * @return
+     */
+    protected double distance(double x0, double y0, double x1, double y1) {
+        double xSq = (x1 - x0) * (x1 - x0);
+        double ySq = (y1 - y0) * (y1 - y0);
 
-		// return Math.sqrt(xSq + ySq);
-		return Math.sqrt(xSq + ySq);
-	}
+        // return Math.sqrt(xSq + ySq);
+        return Math.sqrt(xSq + ySq);
+    }
 }

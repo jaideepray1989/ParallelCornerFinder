@@ -23,7 +23,6 @@ public class DBUtils {
             Integer counter = 1;
             while (rs.next()) {
                 String data = rs.getString("data");
-                System.out.println(data.substring(7));
                 ShapeParser p = new ShapeParser();
                 List<TStroke> strokes = p.parseIntoStrokes(data
                         .substring(7));
